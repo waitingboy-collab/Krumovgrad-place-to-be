@@ -1,0 +1,2881 @@
+<!doctype html>
+<html lang="bg" data-theme="light" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Krumovgrad — place to be</title>
+<meta name="description" content="Атлас на интересните места в община Крумовград – природа, история, вода и храмове в Източните Родопи.">
+<meta name="theme-color" content="#FAF8F4">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Krumovgrad — place to be">
+<meta property="og:description" content="Атлас на интересните места в община Крумовград, Източни Родопи.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230B7A78'/%3E%3Cpath d='M7 22c4.5 0 4.5-7 9-7s4.5 7 9 7' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='9.5' r='2.6' fill='%23F2B48F'/%3E%3C/svg%3E">
+<script>
+  /* Тема и език преди първото рендериране – без премигване */
+  (function () {
+    var d = document.documentElement, choice = 'light', lang = null, L = ['bg', 'en', 'el', 'tr'];
+    try { choice = localStorage.getItem('kg-theme') || 'light'; } catch (e) {}
+    if (choice !== 'dark' && choice !== 'system') choice = 'light';
+    var dark = choice === 'dark' || (choice === 'system' && !!window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    d.setAttribute('data-theme', dark ? 'dark' : 'light');
+    d.setAttribute('data-theme-choice', choice);
+    d.style.colorScheme = dark ? 'dark' : 'light';
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', dark ? '#0D1718' : '#FAF8F4');
+    try { var q = new URLSearchParams(location.search).get('lang'); if (L.indexOf(q) > -1) lang = q; } catch (e) {}
+    if (!lang) { try { var s = localStorage.getItem('kg-lang'); if (L.indexOf(s) > -1) lang = s; } catch (e) {} }
+    if (!lang) {
+      var nl = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      for (var i = 0; i < nl.length; i++) { var c = String(nl[i]).toLowerCase().split('-')[0]; if (L.indexOf(c) > -1) { lang = c; break; } }
+    }
+    lang = lang || 'bg';
+    d.lang = lang;
+    window.__KG_LANG = lang;
+    d.className = 'js' + (lang !== 'bg' ? ' i18n-wait' : '');
+    if (lang !== 'bg') setTimeout(function () { d.classList.remove('i18n-wait'); }, 2500);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  /* ================= Токени ================= */
+  :root, :root[data-theme="light"] {
+    /* Туф, мастило, Арда, теракота */
+    --bg: #FAF8F4;
+    --bg-2: #F3EFE7;
+    --surface: #FFFFFF;
+    --surface-2: #F4F1EB;
+    --raised: #FFFFFF;
+    --ink: #10292B;
+    --ink-2: #465A5B;
+    --ink-3: #5B6D6F;
+    --line: rgba(16, 41, 43, .10);
+    --line-2: rgba(16, 41, 43, .18);
+    --accent: #0B7A78;
+    --accent-hover: #096664;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #DCEFEC;
+    --accent-text: #0A6967;
+    --terra: #A9472F;
+    --terra-soft: #F7E6DD;
+    --ochre: #A2621F;
+    --danger: #B3261E;
+    --danger-soft: #FBE8E5;
+    --ok: #1D6A44;
+    --ok-soft: #E1F1E7;
+    --info-soft: #E9EFEF;
+    --cat-nature: #4E7A3B;
+    --cat-history: #A2621F;
+    --cat-water: #0B7A86;
+    --cat-temples: #A9472F;
+    --cat-other: #5F7173;
+    --pin-ico: #FFFFFF;
+    --tint: 13%;
+    --map-bg: #ECE8DF;
+    --nav-bg: rgba(250, 248, 244, .84);
+    --shadow-1: 0 1px 2px rgba(16, 41, 43, .06), 0 1px 1px rgba(16, 41, 43, .04);
+    --shadow-2: 0 12px 32px -14px rgba(16, 41, 43, .22), 0 2px 6px rgba(16, 41, 43, .06);
+    --shadow-3: 0 32px 80px -24px rgba(10, 30, 32, .38), 0 6px 18px rgba(10, 30, 32, .08);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0D1718;
+    --bg-2: #101C1D;
+    --surface: #152224;
+    --surface-2: #1C2B2D;
+    --raised: #1E3032;
+    --ink: #ECF1EE;
+    --ink-2: #AFBEBB;
+    --ink-3: #93A4A1;
+    --line: rgba(236, 241, 238, .09);
+    --line-2: rgba(236, 241, 238, .18);
+    --accent: #43C6BE;
+    --accent-hover: #63D4CD;
+    --accent-ink: #04211F;
+    --accent-soft: rgba(67, 198, 190, .15);
+    --accent-text: #63D4CD;
+    --terra: #E8906A;
+    --terra-soft: rgba(232, 144, 106, .15);
+    --ochre: #DDA75A;
+    --danger: #F49A90;
+    --danger-soft: rgba(244, 154, 144, .13);
+    --ok: #7FD3A4;
+    --ok-soft: rgba(127, 211, 164, .13);
+    --info-soft: rgba(236, 241, 238, .07);
+    --cat-nature: #8EBE6F;
+    --cat-history: #DDA75A;
+    --cat-water: #4FC3CF;
+    --cat-temples: #E68A6E;
+    --cat-other: #9AAAA8;
+    --pin-ico: #0D1718;
+    --tint: 17%;
+    --map-bg: #1A2425;
+    --nav-bg: rgba(13, 23, 24, .82);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, .3);
+    --shadow-2: 0 14px 34px -14px rgba(0, 0, 0, .6), 0 2px 6px rgba(0, 0, 0, .25);
+    --shadow-3: 0 34px 90px -20px rgba(0, 0, 0, .7), 0 6px 18px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+  :root {
+    --font-display: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-text: "Commissioner", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --ease-in: cubic-bezier(.4, 0, 1, 1);
+    --gutter: clamp(16px, 4vw, 40px);
+    --maxw: 1240px;
+    --nav-h: 68px;
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+    --h-half: 64dvh;
+    --h-full: calc(100dvh - 12px);
+  }
+  @media (max-width: 767.98px) { :root { --nav-h: 60px; } }
+
+  /* ================= База ================= */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--nav-h) + 12px); }
+  html.i18n-wait body { visibility: hidden; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.6 var(--font-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    transition: background-color .25s var(--ease), color .25s var(--ease);
+  }
+  body:has(dialog[open]) { overflow: hidden; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { -webkit-tap-highlight-color: transparent; }
+  img { max-width: 100%; }
+  a { color: var(--accent-text); text-underline-offset: 3px; }
+  [hidden] { display: none !important; }
+  svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .visually-hidden {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .skip {
+    position: fixed; left: 16px; top: -120px; z-index: 3000;
+    padding: 12px 18px; border-radius: 999px; background: var(--ink); color: var(--bg);
+    font-weight: 600; text-decoration: none;
+  }
+  .skip:focus { top: 12px; }
+  .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+
+  /* ================= Бутони ================= */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid transparent;
+    font: 600 .95rem/1 var(--font-text); text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background-color .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-2); }
+  .btn-secondary:hover { background: var(--surface-2); }
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .btn .i { width: 18px; height: 18px; }
+  .icon-btn {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none;
+    border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); cursor: pointer;
+    transition: background-color .18s var(--ease), transform .18s var(--ease);
+  }
+  .icon-btn:hover { background: var(--surface-2); }
+  .icon-btn:active { transform: scale(.95); }
+  .linkbtn {
+    min-height: 44px; padding: 0 4px; background: none; border: 0; cursor: pointer;
+    color: var(--accent-text); font-weight: 600; font-size: .9rem; text-decoration: underline; text-underline-offset: 3px;
+  }
+
+  /* ================= Навигация ================= */
+  .nav {
+    position: sticky; top: 0; z-index: 1000;
+    background: var(--nav-bg);
+    -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s var(--ease), background-color .25s var(--ease);
+  }
+  .nav.is-scrolled { border-bottom-color: var(--line); }
+  .nav-in { display: flex; align-items: center; gap: 24px; height: var(--nav-h); max-width: none; padding-inline: var(--gutter); }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; color: var(--ink); text-decoration: none; min-width: 0; min-height: 44px; }
+  .brand-mark { width: 34px; height: 34px; flex: none; }
+  .brand-mark .bm-bg { fill: var(--accent); }
+  .brand-mark .bm-river { fill: none; stroke: var(--accent-ink); stroke-width: 2.6; stroke-linecap: round; }
+  .brand-mark .bm-dot { fill: #F2B48F; }
+  .brand-t { display: flex; flex-direction: column; line-height: 1; min-width: 0; }
+  .brand-t b { font: 800 1.08rem/1 var(--font-display); letter-spacing: -.02em; }
+  .brand-t span { margin-top: 4px; font-size: .74rem; font-weight: 500; color: var(--ink-3); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 999px;
+    color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: .95rem;
+    transition: background-color .18s var(--ease), color .18s var(--ease);
+  }
+  .nav-links a:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-actions { display: flex; align-items: center; gap: 6px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-weight: 500; font-size: .92rem; cursor: pointer;
+    transition: background-color .18s var(--ease), border-color .18s var(--ease);
+  }
+  .nav-btn:hover { background: var(--surface-2); }
+  .nav-btn[aria-expanded="true"] { border-color: var(--line-2); background: var(--surface-2); }
+  .nav-btn .chev { width: 16px; height: 16px; color: var(--ink-3); transition: transform .18s var(--ease); }
+  .nav-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .nav-icon { width: 44px; padding: 0; justify-content: center; }
+  @media (max-width: 960px) { .nav-links { display: none; } }
+  @media (max-width: 640px) {
+    .nav-in { gap: 10px; }
+    .brand-t span { display: none; }
+    .nav-btn .nav-btn-lbl, .nav-btn .chev { display: none; }
+    #lang-btn { width: 44px; padding: 0; justify-content: center; }
+    .btn-nav { width: 44px; padding: 0; }
+    .btn-nav .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+  @media (max-width: 360px) { .brand-t { display: none; } }
+
+  /* Падащи менюта (език, тема) */
+  .menu { position: relative; }
+  .menu-list {
+    position: absolute; right: 0; top: calc(100% + 8px); z-index: 1100;
+    min-width: 210px; margin: 0; padding: 6px; list-style: none;
+    background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-3);
+    transform-origin: top right; animation: menu-in .16s var(--ease);
+  }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+  .menu-item {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 12px;
+    border: 0; border-radius: var(--r-sm); background: none; color: var(--ink); text-align: left; cursor: pointer;
+    font-size: .95rem; font-weight: 500;
+  }
+  .menu-item:hover, .menu-item:focus-visible { background: var(--surface-2); outline: none; }
+  .menu-item .i { color: var(--ink-3); }
+  .menu-item .check { margin-left: auto; color: var(--accent-text); opacity: 0; }
+  .menu-item[aria-checked="true"] { font-weight: 600; }
+  .menu-item[aria-checked="true"] .check { opacity: 1; }
+
+  /* ================= Hero ================= */
+  .hero { position: relative; z-index: 2; isolation: isolate; }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(60% 70% at 92% 0%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 70%),
+      radial-gradient(50% 60% at 0% 100%, color-mix(in oklab, var(--terra) 10%, transparent), transparent 70%);
+  }
+  .hero-in { padding-top: clamp(40px, 8vw, 104px); padding-bottom: clamp(40px, 6vw, 80px); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; align-items: center; }
+  .hero-main { min-width: 0; }
+  .hero-aside { display: none; }
+  @media (min-width: 1100px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr); }
+    .hero-aside { display: block; }
+  }
+  .ha-card { padding: 10px; border: 1px solid var(--line); border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--shadow-2); }
+  .ha-feat {
+    position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; overflow: hidden;
+    border: 0; border-radius: var(--r-lg); cursor: pointer; text-align: left; color: #fff; isolation: isolate;
+  }
+  .ha-feat img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s var(--ease); }
+  .ha-feat:hover img { transform: scale(1.03); }
+  .ha-feat::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 40%, rgba(5, 16, 17, .78) 100%); }
+  .ha-feat .card-tags { z-index: 2; }
+  .ha-cap { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: grid; gap: 2px; }
+  .ha-name { font: 700 1.15rem/1.25 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
+  .ha-meta { font-size: .88rem; opacity: .92; }
+  .ha-title { margin: 14px 10px 4px; font-size: .86rem; font-weight: 600; color: var(--ink-2); }
+  .ha-list { list-style: none; margin: 0; padding: 0; }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 10px; margin: 0 0 22px; padding: 7px 14px 7px 10px;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+    font-size: .88rem; font-weight: 500; color: var(--ink-2); box-shadow: var(--shadow-1);
+  }
+  .hero-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .hero-title {
+    max-width: 15ch; margin: 0; font: 800 clamp(2.35rem, 6.6vw, 5.1rem)/1.02 var(--font-display);
+    letter-spacing: -.035em; text-wrap: balance;
+  }
+  .hero-title .hl { display: block; color: var(--accent-text); }
+  .hero-lede { max-width: 38em; margin: 22px 0 0; font-size: clamp(1.02rem, 1.4vw, 1.18rem); color: var(--ink-2); text-wrap: pretty; }
+
+  .hero-search { position: relative; max-width: 720px; margin-top: 32px; z-index: 20; }
+  .hs-form {
+    display: flex; align-items: center; gap: 8px; height: 64px; padding: 0 8px 0 20px;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px; box-shadow: var(--shadow-2);
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .hs-form:focus-within { border-color: var(--accent); box-shadow: var(--shadow-2), 0 0 0 4px var(--accent-soft); }
+  .hs-form .i { color: var(--ink-3); width: 22px; height: 22px; }
+  .hs-form input {
+    flex: 1; min-width: 0; height: 100%; padding: 0 4px; border: 0; background: none; outline: none;
+    font-size: 1.1rem; font-weight: 500; color: var(--ink);
+  }
+  .hs-form input::placeholder { color: var(--ink-3); font-weight: 400; }
+  .hs-form input::-webkit-search-cancel-button { cursor: pointer; }
+  .hs-go { min-height: 48px; padding: 0 22px; }
+  @media (max-width: 520px) {
+    .hs-form { height: 58px; padding-left: 16px; }
+    .hs-go { width: 46px; min-height: 46px; padding: 0; }
+    .hs-go .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+  .hs-list {
+    position: absolute; left: 0; right: 0; top: calc(100% + 8px); margin: 0; padding: 6px; list-style: none;
+    max-height: min(60vh, 420px); overflow: auto; overscroll-behavior: contain;
+    background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-3);
+    animation: menu-in .16s var(--ease);
+  }
+  .hs-opt { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 10px; border-radius: var(--r-md); cursor: pointer; }
+  .hs-opt:hover, .hs-opt[aria-selected="true"] { background: var(--surface-2); }
+  .hs-none { padding: 14px 12px; color: var(--ink-2); }
+
+  .quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .qchip {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 8px;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-weight: 500; font-size: .94rem; cursor: pointer;
+    transition: background-color .18s var(--ease), border-color .18s var(--ease), transform .18s var(--ease);
+  }
+  .qchip:hover { border-color: var(--line-2); background: var(--surface-2); }
+  .qchip:active { transform: scale(.98); }
+  .qchip .qi { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--c); color: var(--pin-ico); }
+  .qchip .qi svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .qchip .n { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  /* ================= Секции ================= */
+  .sec { padding-block: clamp(40px, 6vw, 72px); }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 32px; margin-bottom: 24px; }
+  .h2 { margin: 0; font: 800 clamp(1.6rem, 3vw, 2.3rem)/1.12 var(--font-display); letter-spacing: -.025em; text-wrap: balance; }
+  .sec-lead { max-width: 34em; margin: 0; color: var(--ink-2); }
+
+  /* Bento */
+  .bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(176px, auto); gap: 12px; }
+  .tile {
+    position: relative; display: flex; flex-direction: column; gap: 14px; padding: 20px; min-width: 0;
+    border: 1px solid var(--line); border-radius: var(--r-lg); cursor: pointer; text-align: left; color: var(--ink);
+    background: var(--surface-2);
+    background: color-mix(in oklab, var(--c) var(--tint), var(--surface));
+    transition: transform .2s var(--ease), box-shadow .2s var(--ease), background-color .2s var(--ease);
+  }
+  .tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); background: color-mix(in oklab, var(--c) calc(var(--tint) + 6%), var(--surface)); }
+  .tile:active { transform: translateY(0) scale(.99); }
+  .tile-ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--c); color: var(--pin-ico); }
+  .tile-ico svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .tile-name { display: block; font: 800 1.35rem/1.1 var(--font-display); letter-spacing: -.02em; }
+  .tile-desc { display: block; margin-top: 6px; color: var(--ink-2); font-size: .95rem; line-height: 1.5; }
+  .tile-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; font-weight: 600; font-size: .9rem; }
+  .tile-go { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface); color: var(--ink); transition: transform .2s var(--ease); }
+  .tile:hover .tile-go { transform: translateX(3px); }
+  .tile-go svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tile.t-big { grid-column: span 2; grid-row: span 2; padding: 28px; }
+  .tile.t-big .tile-ico { width: 64px; height: 64px; border-radius: 18px; }
+  .tile.t-big .tile-ico svg { width: 32px; height: 32px; }
+  .tile.t-big .tile-name { font-size: clamp(1.8rem, 3vw, 2.5rem); }
+  .tile.t-big .tile-desc { font-size: 1.05rem; max-width: 26em; }
+  .tile.t-wide { grid-column: span 2; }
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tile.t-big { grid-row: span 1; }
+    .tile.t-last { grid-column: span 2; }
+    .tile.t-wide { grid-column: span 1; }
+  }
+  @media (max-width: 560px) {
+    .bento { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+    .tile, .tile.t-big, .tile.t-wide, .tile.t-last { grid-column: auto; padding: 18px; }
+    .tile.t-big .tile-name { font-size: 1.6rem; }
+  }
+
+  /* ================= Изследване: списък + карта ================= */
+  .explore { position: relative; border-top: 1px solid var(--line); }
+  .explore:focus { outline: none; }
+  .ex-list { min-width: 0; padding: 28px var(--gutter) 40px; }
+  .ex-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 20px; }
+  .ex-head .sec-lead { font-size: .95rem; }
+  .ex-tools {
+    position: sticky; top: var(--nav-h); z-index: 30;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+    margin: 16px calc(var(--gutter) * -1) 20px; padding: 12px var(--gutter);
+    background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  .ex-search { position: relative; flex: 1 1 220px; max-width: 320px; }
+  .ex-search .i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; width: 18px; height: 18px; }
+  .ex-search input {
+    width: 100%; height: 44px; padding: 0 14px 0 42px;
+    border: 1px solid var(--line-2); border-radius: 999px; background: var(--surface); outline: none;
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .ex-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+    border: 1px solid var(--line-2); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: .9rem; font-weight: 500; cursor: pointer;
+    transition: background-color .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease);
+  }
+  .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c, currentColor); flex: none; }
+  .chip.chip-all::before { display: none; }
+  .chip:hover { background: var(--surface-2); }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .chip-n { opacity: .62; font-variant-numeric: tabular-nums; }
+  .count-row { display: flex; align-items: center; gap: 12px; margin-left: auto; font-size: .9rem; color: var(--ink-2); }
+  @media (max-width: 1279.98px) { .count-row { margin-left: 0; width: 100%; justify-content: space-between; } }
+  @media (max-width: 560px) {
+    .ex-search { max-width: none; flex-basis: 100%; }
+    .chips { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scrollbar-width: none; width: calc(100% + var(--gutter) * 2); }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { flex: none; }
+  }
+
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 28px 20px; }
+  .card { min-width: 0; }
+  .card-btn {
+    display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer;
+    border-radius: var(--r-lg);
+  }
+  .card-btn:focus-visible { outline-offset: 6px; }
+  .card-media {
+    position: relative; display: block; aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--r-lg); isolation: isolate;
+    box-shadow: 0 0 0 0 var(--c);
+    transition: box-shadow .2s var(--ease), transform .2s var(--ease);
+  }
+  .card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s var(--ease); }
+  .card-btn:hover .card-media img, .card.is-hover .card-media img { transform: scale(1.035); }
+  .card.is-hover .card-media, .card.is-active .card-media { box-shadow: 0 0 0 3px var(--c); }
+  .ph {
+    position: absolute; inset: 0; display: grid; place-items: center; color: var(--c);
+    background: var(--surface-2);
+    background: linear-gradient(160deg, color-mix(in oklab, var(--c) calc(var(--tint) + 4%), var(--surface)), color-mix(in oklab, var(--c) var(--tint), var(--surface)));
+  }
+  .ph svg { width: 30%; max-width: 88px; height: auto; aspect-ratio: 1; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: .9; }
+  .card-tags { position: absolute; left: 12px; top: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 2; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px;
+    border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: .8rem; font-weight: 600; box-shadow: var(--shadow-1);
+  }
+  .tag .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  .tag svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tag-drone { background: var(--ink); color: var(--bg); margin-left: auto; }
+  .card-body { display: block; padding: 12px 2px 0; }
+  .card-title { display: block; font: 700 1.1rem/1.3 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
+  .card-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--ink-2); font-size: .9rem; }
+  .card-meta svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .card-desc {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    margin-top: 6px; color: var(--ink-2); font-size: .92rem; line-height: 1.5;
+  }
+  .empty {
+    grid-column: 1 / -1; display: grid; justify-items: center; gap: 14px; padding: 56px 16px; text-align: center;
+    border: 1px dashed var(--line-2); border-radius: var(--r-lg); color: var(--ink-2);
+  }
+  .empty p { margin: 0; font: 700 1.2rem/1.3 var(--font-display); color: var(--ink); }
+  .list-note { display: flex; gap: 10px; align-items: flex-start; margin: 32px 0 0; font-size: .88rem; color: var(--ink-2); }
+  .list-note .i { width: 18px; height: 18px; margin-top: 2px; color: var(--accent-text); }
+
+  .fab-wrap { position: sticky; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 40; display: flex; justify-content: center; margin-top: 28px; pointer-events: none; }
+  .fab {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; pointer-events: auto;
+    border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); box-shadow: var(--shadow-3);
+    font-weight: 600; font-size: .95rem; cursor: pointer; transition: transform .18s var(--ease);
+  }
+  .fab:active { transform: scale(.97); }
+
+  .ex-map { min-width: 0; }
+  .map-box { position: relative; isolation: isolate; height: 100%; overflow: hidden; background: var(--map-bg); }
+  #map { position: absolute; inset: 0; background: var(--map-bg); }
+  .map-ui { position: absolute; z-index: 500; left: 12px; right: 12px; top: 12px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; pointer-events: none; }
+  .map-ui > * { pointer-events: auto; }
+  .seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-2); }
+  .seg button {
+    min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--ink-2);
+    font-size: .88rem; font-weight: 600; cursor: pointer; transition: background-color .18s var(--ease), color .18s var(--ease);
+  }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .map-chip {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 14px;
+    border: 0; border-radius: 999px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow-2);
+    font-size: .88rem; font-weight: 600; cursor: pointer;
+  }
+  .map-chip:hover { background: var(--surface-2); }
+  .map-note {
+    position: absolute; z-index: 500; left: 12px; bottom: 12px; max-width: min(420px, calc(100% - 90px));
+    display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 14px;
+    border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow-2);
+    font-size: .82rem; line-height: 1.45; color: var(--ink-2);
+  }
+  .map-note .i { width: 16px; height: 16px; margin-top: 1px; color: var(--accent-text); }
+  .fab-list { position: absolute; z-index: 600; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); }
+  .fab-list:active { transform: translateX(-50%) scale(.97); }
+
+  @media (min-width: 1024px) {
+    .explore { display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 46%); }
+    .ex-list { padding-right: 28px; min-height: calc(100dvh - var(--nav-h)); }
+    .ex-tools { margin-right: -28px; padding-right: 28px; }
+    .ex-map { position: sticky; top: var(--nav-h); height: calc(100dvh - var(--nav-h)); padding: 12px 12px 12px 0; }
+    .map-box { border-radius: var(--r-lg); border: 1px solid var(--line); }
+    .fab-wrap, .fab-list { display: none; }
+  }
+  @media (min-width: 1500px) { .explore { grid-template-columns: minmax(0, 1fr) minmax(400px, 50%); } }
+  @media (max-width: 1023.98px) {
+    .ex-map {
+      position: fixed; z-index: 900; left: 0; right: 0; top: var(--nav-h); bottom: 0;
+      visibility: hidden; opacity: 0; transform: translateY(16px);
+      transition: opacity .22s var(--ease), transform .22s var(--ease), visibility 0s linear .22s;
+    }
+    body.map-open { overflow: hidden; }
+    body.map-open .ex-map { visibility: visible; opacity: 1; transform: none; transition: opacity .22s var(--ease), transform .22s var(--ease), visibility 0s; }
+    .map-note { display: none; }
+    .map-chip .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .map-chip { width: 46px; padding: 0; justify-content: center; }
+  }
+
+  /* ================= Leaflet по темата ================= */
+  .leaflet-container { font-family: var(--font-text); background: var(--map-bg); color: var(--ink); }
+  .leaflet-bar { border: 0 !important; border-radius: var(--r-md) !important; overflow: hidden; box-shadow: var(--shadow-2) !important; }
+  .leaflet-bar a, .leaflet-bar a:hover {
+    width: 44px !important; height: 44px !important; line-height: 44px !important;
+    background: var(--surface); color: var(--ink); border-bottom: 1px solid var(--line) !important; font-size: 20px !important;
+  }
+  .leaflet-bar a:hover { background: var(--surface-2); }
+  .leaflet-bar a:last-child { border-bottom: 0 !important; }
+  .leaflet-bar a.leaflet-disabled { background: var(--surface); color: var(--ink-3); opacity: .55; }
+  .leaflet-control-zoom { margin: 0 12px 12px 0 !important; }
+  @media (max-width: 1023.98px) { .leaflet-bottom.leaflet-right .leaflet-control-zoom { margin-bottom: 84px !important; } }
+  .leaflet-control-attribution { background: var(--surface) !important; background: color-mix(in srgb, var(--surface) 82%, transparent) !important; color: var(--ink-3); font-size: 10px; }
+  .leaflet-control-attribution a { color: var(--ink-2); }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-3); }
+  .leaflet-popup-content-wrapper { border-radius: var(--r-md); border: 1px solid var(--line); }
+  .leaflet-popup-content { margin: 14px 16px; font-size: .9rem; line-height: 1.45; }
+  .leaflet-container a.leaflet-popup-close-button { width: 32px; height: 32px; font-size: 20px; line-height: 30px; color: var(--ink-3); }
+  .leaflet-container a.leaflet-popup-close-button:hover { color: var(--ink); }
+  .leaflet-tooltip.kg-tip {
+    padding: 6px 11px; border: 0; border-radius: 9px; background: var(--ink); color: var(--bg);
+    font-weight: 600; font-size: .82rem; box-shadow: var(--shadow-2); white-space: nowrap;
+  }
+  .leaflet-tooltip-top.kg-tip::before { border-top-color: var(--ink); }
+  .kg-boundary { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 6; fill: var(--accent); fill-opacity: .06; }
+  .on-sat .kg-boundary { stroke: #FFFFFF; fill: #FFFFFF; fill-opacity: .05; }
+  .tiles-sat { filter: saturate(.92) contrast(1.03); }
+  .pin-wrap { background: none; border: 0; }
+  .pin {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    background: var(--c); color: var(--pin-ico);
+    box-shadow: 0 0 0 3px var(--surface), 0 6px 16px rgba(0, 0, 0, .28);
+    transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .pin svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+  .is-hover .pin, .is-active .pin { transform: scale(1.22); box-shadow: 0 0 0 3px var(--surface), 0 0 0 6px var(--c), 0 10px 24px rgba(0, 0, 0, .32); }
+  .leaflet-container .leaflet-marker-icon:focus-visible { outline: none; }
+  .leaflet-container .leaflet-marker-icon:focus-visible .pin { box-shadow: 0 0 0 3px var(--surface), 0 0 0 6px var(--accent); transform: scale(1.15); }
+  .center-mark { background: none; border: 0; }
+  .cm-dot { position: absolute; inset: 0; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 3px var(--surface); }
+  .cm-label {
+    position: absolute; left: 18px; top: -7px; padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+    background: var(--surface); color: var(--ink); font-size: 11px; font-weight: 700; box-shadow: var(--shadow-1);
+  }
+  .map-pop { display: grid; gap: 10px; min-width: 180px; }
+  .map-pop p { margin: 0; }
+  .mp-coords { font-variant-numeric: tabular-nums; color: var(--ink-3); font-size: .82rem; }
+
+  /* ================= Редове (наблизо, предложения в търсенето) ================= */
+  .row {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 10px; text-align: left;
+    border: 0; border-radius: var(--r-md); background: none; color: inherit; cursor: pointer;
+    transition: background-color .18s var(--ease);
+  }
+  .row:hover { background: var(--surface-2); }
+  .row-ico { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 12px; background: var(--c); color: var(--pin-ico); }
+  .row-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .row-t { min-width: 0; display: flex; flex-direction: column; }
+  .row-name { font-weight: 600; line-height: 1.3; }
+  .row-meta { font-size: .84rem; color: var(--ink-2); }
+  .row-go { margin-left: auto; color: var(--ink-3); width: 18px; height: 18px; }
+
+  /* ================= Футър ================= */
+  .footer { background: var(--bg-2); border-top: 1px solid var(--line); padding: clamp(48px, 7vw, 80px) 0 28px; }
+  .foot-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, .9fr); gap: 32px 48px; }
+  .foot-brand p { max-width: 26em; margin: 16px 0 0; color: var(--ink-2); }
+  .foot-h { margin: 0 0 10px; font: 700 1rem/1.3 var(--font-display); }
+  .foot-col p { margin: 0 0 10px; font-size: .92rem; color: var(--ink-2); }
+  .foot-col a { color: var(--ink); }
+  .foot-cta p { font: 700 1.15rem/1.3 var(--font-display); color: var(--ink); }
+  .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: .86rem; color: var(--ink-3); }
+  .foot-bottom a { color: var(--ink-2); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+  .foot-bottom a:hover { color: var(--ink); text-decoration: underline; }
+  @media (max-width: 860px) { .foot-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ================= Sheet / модал ================= */
+  dialog.sheet {
+    padding: 0; border: 0; color: var(--ink); background: var(--surface); box-shadow: var(--shadow-3);
+    overflow: hidden; overscroll-behavior: contain;
+  }
+  dialog.sheet[open] { display: flex; flex-direction: column; }
+  dialog.sheet::backdrop { background: rgba(6, 18, 20, .5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: fade-in .22s var(--ease); }
+  dialog.sheet.is-closing::backdrop { animation: fade-out .2s var(--ease-in) forwards; }
+  @keyframes fade-in { from { opacity: 0; } }
+  @keyframes fade-out { to { opacity: 0; } }
+  .sheet-top { flex: none; position: relative; z-index: 3; background: var(--surface); }
+  .grab { display: none; }
+  .sheet-bar { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 12px 10px 20px; border-bottom: 1px solid var(--line); }
+  .sheet-bar h2 { margin: 0; font: 800 1.3rem/1.2 var(--font-display); letter-spacing: -.02em; }
+  .sheet-bar h2:focus { outline: none; }
+  .sheet-bar .icon-btn { margin-left: auto; }
+  .sheet-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--surface-2); font-size: .85rem; font-weight: 600; }
+  .pill .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+
+  @media (min-width: 768px) {
+    dialog.sheet {
+      margin: auto; width: min(1000px, calc(100vw - 48px)); max-width: none;
+      height: auto; max-height: calc(100dvh - 48px); border-radius: var(--r-xl);
+    }
+    dialog.sheet-form { width: min(620px, calc(100vw - 48px)); }
+    dialog.sheet[open] { animation: pop-in .22s var(--ease); }
+    dialog.sheet.is-closing { animation: pop-out .16s var(--ease-in) forwards; }
+  }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+  @keyframes pop-out { to { opacity: 0; transform: translateY(6px) scale(.985); } }
+  @media (max-width: 767.98px) {
+    dialog.sheet {
+      position: fixed; inset: auto 0 0 0; margin: 0; width: 100%; max-width: 100%;
+      height: var(--h-half); max-height: var(--h-full);
+      border-radius: 22px 22px 0 0; padding-bottom: env(safe-area-inset-bottom);
+      transition: height .28s var(--ease);
+    }
+    dialog.sheet[data-snap="full"], dialog.sheet-form { height: var(--h-full); }
+    dialog.sheet.is-dragging { transition: none; }
+    dialog.sheet[open] { animation: sheet-in .3s var(--ease); }
+    dialog.sheet.is-closing { animation: sheet-out .22s var(--ease-in) forwards; }
+    .sheet-top { touch-action: none; cursor: grab; }
+    .is-dragging .sheet-top { cursor: grabbing; }
+    .grab { display: block; height: 22px; padding-top: 8px; }
+    .grab::before { content: ""; display: block; width: 40px; height: 5px; margin: 0 auto; border-radius: 3px; background: var(--line-2); }
+    .sheet-bar { min-height: 52px; padding-top: 0; }
+  }
+  @keyframes sheet-in { from { transform: translateY(100%); } }
+  @keyframes sheet-out { from { transform: translateY(var(--drag-y, 0px)); } to { transform: translateY(100%); } }
+
+  /* Детайл */
+  .d-media {
+    position: relative; aspect-ratio: 16 / 9; margin: 16px 20px 0; overflow: hidden;
+    border-radius: var(--r-lg); background: var(--surface-2); isolation: isolate;
+  }
+  @media (min-width: 900px) { .d-media:not(.is-video) { aspect-ratio: 2 / 1; } }
+  .d-media.is-video { background: #000; }
+  .d-media iframe, .d-media video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+  .d-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .d-media .ph { gap: 10px; align-content: center; justify-items: center; text-align: center; padding: 20px; }
+  .d-media .ph svg { width: 22%; max-width: 96px; }
+  .d-media .ph span { font-size: .9rem; font-weight: 500; color: var(--ink-2); }
+  .d-media .d-link { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; }
+  .credit { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 10px 22px 0; font-size: .88rem; color: var(--ink-2); }
+  .credit a { font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
+  .d-grid { display: grid; gap: 28px; padding: 20px 20px 36px; }
+  @media (min-width: 900px) { .d-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 36px; padding: 24px 28px 36px; } .d-media { margin: 20px 28px 0; } .credit { margin-inline: 30px; } }
+  .d-title { margin: 0; font: 800 clamp(1.6rem, 3.4vw, 2.3rem)/1.1 var(--font-display); letter-spacing: -.03em; text-wrap: balance; }
+  .d-title:focus { outline: none; }
+  .d-title:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .d-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 10px 0 0; color: var(--ink-2); font-size: .94rem; }
+  .d-sub svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .d-desc { margin: 18px 0 0; font-size: 1.06rem; line-height: 1.7; text-wrap: pretty; }
+  .d-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .d-note { margin: 12px 0 0; font-size: .86rem; color: var(--ink-2); }
+  .d-photo { display: block; width: 100%; height: auto; margin-top: 24px; border-radius: var(--r-lg); }
+  .src { margin: 24px 0 0; font-size: .86rem; color: var(--ink-2); overflow-wrap: anywhere; }
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+  .fact { padding: 12px 14px; border-radius: var(--r-md); background: var(--surface-2); min-width: 0; }
+  .fact.wide { grid-column: 1 / -1; }
+  .fact dt { font-size: .8rem; font-weight: 500; color: var(--ink-2); }
+  .fact dd { margin: 4px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+  .fact .big { font: 800 1.55rem/1.1 var(--font-display); letter-spacing: -.02em; }
+  .fact .sub { font-size: .84rem; font-weight: 500; color: var(--ink-2); }
+  .nf { font-weight: 400; font-style: italic; color: var(--ink-3); }
+  .approx-tag { display: inline-flex; margin-left: 4px; padding: 2px 8px; border-radius: 999px; background: var(--terra-soft); color: var(--terra); font-size: .76rem; font-weight: 700; vertical-align: 1px; }
+  .d-h3 { margin: 26px 0 8px; font: 700 1.05rem/1.3 var(--font-display); }
+  .near { list-style: none; margin: 0 -10px; padding: 0; }
+
+  /* Форма */
+  .s-body { padding: 20px 20px 32px; }
+  @media (min-width: 768px) { .s-body { padding: 24px 28px 32px; } }
+  .form { display: grid; gap: 18px; }
+  .intro-p { margin: 0; color: var(--ink-2); }
+  .field-label { display: block; margin-bottom: 6px; font-size: .9rem; font-weight: 600; color: var(--ink); }
+  .field input:not([type="file"]), .field select, .field textarea, .coords input {
+    width: 100%; min-height: 48px; padding: 11px 14px;
+    border: 1px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); outline: none;
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus, .coords input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .field textarea { min-height: 108px; resize: vertical; }
+  .field input[type="file"] { width: 100%; padding: 12px; border: 1px dashed var(--line-2); border-radius: var(--r-sm); background: var(--surface-2); cursor: pointer; }
+  .field input[type="file"]::file-selector-button { margin-right: 12px; min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 600; cursor: pointer; }
+  .hint { margin: 6px 0 0; font-size: .84rem; color: var(--ink-2); }
+  .err { margin: 6px 0 0; font-size: .88rem; font-weight: 600; color: var(--danger); }
+  .err:empty, .msg:empty { display: none; }
+  [aria-invalid="true"] { border-color: var(--danger) !important; box-shadow: 0 0 0 1px var(--danger) !important; }
+  .req { color: var(--danger); }
+  fieldset { margin: 0; padding: 16px; border: 1px solid var(--line-2); border-radius: var(--r-md); min-width: 0; }
+  legend { padding: 0 6px; font-size: .9rem; font-weight: 600; }
+  .coords { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .coords label { display: block; margin-bottom: 6px; font-size: .84rem; font-weight: 500; color: var(--ink-2); }
+  .coords-actions { margin-top: 12px; }
+  .msg { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--r-sm); font-weight: 600; font-size: .9rem; }
+  .msg.ok { background: var(--ok-soft); color: var(--ok); }
+  .msg.err { background: var(--danger-soft); color: var(--danger); }
+  .msg.info { background: var(--info-soft); color: var(--ink); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#explore" data-i18n="skip">Към местата</a>
+
+<!-- ================= Навигация ================= -->
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="Krumovgrad place to be">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect class="bm-bg" width="32" height="32" rx="9"/>
+        <path class="bm-river" d="M7 22c4.5 0 4.5-7 9-7s4.5 7 9 7"/>
+        <circle class="bm-dot" cx="16" cy="9.5" r="2.6"/>
+      </svg>
+      <span class="brand-t"><b>Krumovgrad</b><span>place to be</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Основна навигация" data-i18n-label="navLabel">
+      <a href="#themes" data-i18n="navThemes">Теми</a>
+      <a href="#explore" data-i18n="navPlaces">Места</a>
+      <a href="#about" data-i18n="navAbout">За проекта</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="menu">
+        <button type="button" class="nav-btn" id="lang-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="lang-list">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+          <span class="visually-hidden" data-i18n="langLabel">Език</span>
+          <span class="nav-btn-lbl" id="lang-cur">Български</span>
+          <svg class="i chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <ul class="menu-list" id="lang-list" role="menu" aria-labelledby="lang-btn" hidden>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-lang="bg" lang="bg">Български<svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-lang="en" lang="en">English<svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-lang="el" lang="el">Ελληνικά<svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-lang="tr" lang="tr">Türkçe<svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+        </ul>
+      </div>
+      <div class="menu">
+        <button type="button" class="nav-btn nav-icon" id="theme-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="theme-list" aria-label="Тема">
+          <span id="theme-ico" aria-hidden="true"></span>
+        </button>
+        <ul class="menu-list" id="theme-list" role="menu" aria-labelledby="theme-btn" hidden>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-theme-set="light"><span class="mi-ico" data-ico="light"></span><span data-i18n="themeLight">Светла</span><svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-theme-set="dark"><span class="mi-ico" data-ico="dark"></span><span data-i18n="themeDark">Тъмна</span><svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+          <li role="none"><button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-theme-set="system"><span class="mi-ico" data-ico="system"></span><span data-i18n="themeSystem">Системна</span><svg class="i check" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></li>
+        </ul>
+      </div>
+      <button type="button" class="btn btn-primary btn-nav" id="suggest-btn">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="lbl" data-i18n="suggest">Предложи място</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ================= Hero ================= -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-in hero-grid">
+      <div class="hero-main">
+      <p class="hero-pill"><span class="dot" aria-hidden="true"></span><span data-i18n="heroBadge">Източни Родопи · Община Крумовград</span></p>
+      <h1 class="hero-title" id="hero-title"><span data-i18n="heroTitleA">Скали, реки и лешояди.</span> <span class="hl" data-i18n="heroTitleB">Всичко на една карта.</span></h1>
+      <p class="hero-lede" data-i18n="heroLede">Полеви пътеводител за община Крумовград – тракийски светилища, каньони, резервати и тихи села, с маршрут и дрон кадри.</p>
+
+      <div class="hero-search">
+        <form class="hs-form" id="hero-form" role="search">
+          <label class="visually-hidden" for="q" data-i18n="searchLabel">Търси място</label>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="q" class="js-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="q-list"
+                 autocomplete="off" spellcheck="false" enterkeyhint="search" data-i18n-ph="searchPh" placeholder="Къде искаш да отидеш?">
+          <button type="submit" class="btn btn-primary hs-go">
+            <span class="lbl" data-i18n="searchGo">Търси</span>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+        <ul class="hs-list" id="q-list" role="listbox" aria-label="Търси място" data-i18n-label="searchLabel" hidden></ul>
+      </div>
+      <div class="quick" id="quick" role="group" aria-label="Бързи категории" data-i18n-label="quickLabel"></div>
+      </div>
+      <aside class="hero-aside" aria-labelledby="near-title">
+        <div class="ha-card">
+          <div id="hero-feat"></div>
+          <p class="ha-title" id="near-title" data-i18n="heroNearTitle">Най-близо до центъра</p>
+          <ul class="ha-list" id="hero-near"></ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= Теми (bento) ================= -->
+  <section class="sec" id="themes" aria-labelledby="themes-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="h2" id="themes-title" data-i18n="themesTitle">Какво ще откриеш</h2>
+        <p class="sec-lead" data-i18n="themesLead">Четири начина да опознаеш края. Избери един, за да филтрираш картата.</p>
+      </div>
+      <div class="bento" id="bento"></div>
+    </div>
+  </section>
+
+  <!-- ================= Списък + карта ================= -->
+  <section class="explore" id="explore" aria-labelledby="explore-title" tabindex="-1">
+    <div class="ex-list">
+      <div class="ex-head">
+        <h2 class="h2" id="explore-title" data-i18n="exploreTitle">Всички места</h2>
+        <p class="sec-lead" data-i18n="sortNote">Подредени по разстояние от центъра на Крумовград.</p>
+      </div>
+      <div class="ex-tools">
+        <label class="ex-search">
+          <span class="visually-hidden" data-i18n="searchLabel">Търси място</span>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="q2" class="js-q" type="search" autocomplete="off" spellcheck="false" data-i18n-ph="filterPh" placeholder="Филтрирай по име">
+        </label>
+        <div class="chips" id="chips" role="group" aria-label="Категории" data-i18n-label="catsLabel"></div>
+        <div class="count-row">
+          <span id="count" role="status" aria-live="polite"></span>
+          <button type="button" class="linkbtn" id="clear-btn" data-action="clear" data-i18n="clear" hidden>Изчисти филтрите</button>
+        </div>
+      </div>
+      <ul class="cards" id="cards"></ul>
+      <p class="list-note">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span data-i18n="approx">Координатите са приблизителни – проверявай на място.</span>
+      </p>
+      <div class="fab-wrap">
+        <button type="button" class="fab" id="map-open">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>
+          <span data-i18n="showMap">Карта</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="ex-map" id="ex-map">
+      <div class="map-box">
+        <div id="map" role="region" aria-label="Карта на местата" data-i18n-label="mapLabel"></div>
+        <div class="map-ui">
+          <div class="seg" id="layers" role="group" aria-label="Подложка на картата" data-i18n-label="layersLabel">
+            <button type="button" data-layer="map" aria-pressed="true" data-i18n="layerMap">Карта</button>
+            <button type="button" data-layer="sat" aria-pressed="false" data-i18n="layerSat">Сателит</button>
+            <button type="button" data-layer="topo" aria-pressed="false" data-i18n="layerTopo">Терен</button>
+          </div>
+          <button type="button" class="map-chip" id="fit-btn">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            <span class="lbl" data-i18n="fitAll">Цялата община</span>
+          </button>
+        </div>
+        <p class="map-note">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+          <span data-i18n="mapHint">Натисни върху картата, за да предложиш място на тази точка.</span>
+        </p>
+        <button type="button" class="fab fab-list" id="map-close">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+          <span data-i18n="showList">Списък</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= Футър ================= -->
+<footer class="footer" id="about">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <span class="brand" aria-hidden="true">
+          <svg class="brand-mark" viewBox="0 0 32 32" focusable="false"><rect class="bm-bg" width="32" height="32" rx="9"/><path class="bm-river" d="M7 22c4.5 0 4.5-7 9-7s4.5 7 9 7"/><circle class="bm-dot" cx="16" cy="9.5" r="2.6"/></svg>
+          <span class="brand-t"><b>Krumovgrad</b><span>place to be</span></span>
+        </span>
+        <p data-i18n="foot">Личен некомерсиален проект на Радо от Крумовград. Снимките и дрон видеата са авторски.</p>
+      </div>
+      <div class="foot-col">
+        <h2 class="foot-h" data-i18n="aboutTitle">За проекта</h2>
+        <p data-i18n="credits">Описанията са кратки, с посочен източник. Граница на общината: © OpenStreetMap contributors (ODbL), опростена.</p>
+        <p id="authors-line" hidden></p>
+      </div>
+      <div class="foot-col foot-cta">
+        <p data-i18n="suggestLead">Знаеш място, което липсва?</p>
+        <button type="button" class="btn btn-secondary" data-action="suggest">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+          <span data-i18n="suggestCta">Предложи го</span>
+        </button>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Krumovgrad place to be</span>
+      <span><a href="admin.html" rel="nofollow" data-i18n="adminLink">Вход за администратор</a> · <a href="#top" data-i18n="backTop">Нагоре ↑</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= Детайл на място ================= -->
+<dialog id="detail" class="sheet" aria-labelledby="detail-title">
+  <div class="sheet-top" data-drag>
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-bar">
+      <span class="pill" id="detail-cat"></span>
+      <button type="button" class="icon-btn" data-action="close" aria-label="Затвори" data-i18n-label="close">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="sheet-scroll" id="detail-content"></div>
+</dialog>
+
+<!-- ================= Предложи място ================= -->
+<dialog id="suggest" class="sheet sheet-form" aria-labelledby="suggest-title">
+  <div class="sheet-top" data-drag>
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-bar">
+      <h2 id="suggest-title" tabindex="-1" data-i18n="formTitle">Предложи място</h2>
+      <button type="button" class="icon-btn" data-action="close" aria-label="Затвори" data-i18n-label="close">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="sheet-scroll">
+    <div class="s-body">
+      <form id="suggest-form" class="form" novalidate>
+        <p class="intro-p" data-i18n="formIntro">Предложенията се проверяват, преди да се появят на картата.</p>
+
+        <div class="field">
+          <label class="field-label" for="f-name"><span data-i18n="fName">Име на мястото</span> <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-name" name="name" type="text" maxlength="120" autocomplete="off" required aria-describedby="err-name">
+          <p class="err" id="err-name"></p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-cat" data-i18n="fCat">Категория</label>
+          <select id="f-cat" name="category_id"></select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-desc" data-i18n="fDesc">Кратко описание</label>
+          <textarea id="f-desc" name="description" maxlength="2000" aria-describedby="desc-hint"></textarea>
+          <p class="hint" id="desc-hint" data-i18n="fDescHint">Какво има там и как се стига? (по желание)</p>
+        </div>
+
+        <fieldset>
+          <legend><span data-i18n="fCoords">Координати</span> <span class="req" aria-hidden="true">*</span></legend>
+          <div class="coords">
+            <div>
+              <label for="f-lat" data-i18n="fLat">Ширина (lat)</label>
+              <input id="f-lat" name="lat" type="text" inputmode="decimal" autocomplete="off" placeholder="41.4709" required aria-describedby="coords-hint coords-msg">
+            </div>
+            <div>
+              <label for="f-lng" data-i18n="fLng">Дължина (lng)</label>
+              <input id="f-lng" name="lng" type="text" inputmode="decimal" autocomplete="off" placeholder="25.6546" required aria-describedby="coords-hint coords-msg">
+            </div>
+          </div>
+          <p class="hint" id="coords-hint" data-i18n="fCoordsHint">Десетични градуси. Може да поставиш двете стойности наведнъж в първото поле.</p>
+          <div class="coords-actions">
+            <button type="button" class="btn btn-secondary" id="use-loc">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              <span id="use-loc-label" data-i18n="useLoc">Използвай моята локация</span>
+            </button>
+          </div>
+          <p class="msg" id="coords-msg" role="status" aria-live="polite"></p>
+        </fieldset>
+
+        <div class="field">
+          <label class="field-label" for="f-photo" data-i18n="fPhoto">Снимка</label>
+          <input id="f-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-hint err-photo">
+          <p class="hint" id="photo-hint" data-i18n="fPhotoHint">JPG, PNG или WebP, до 5 MB (по желание).</p>
+          <p class="err" id="err-photo"></p>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Website</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="msg" id="form-status" role="status" aria-live="polite"></p>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="f-submit"><span id="f-submit-label" data-i18n="send">Изпрати за одобрение</span></button>
+          <button type="button" class="btn btn-ghost" data-action="close" data-i18n="cancel">Откажи</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(() => {
+  'use strict';
+
+  // ================= Настройки (Supabase) =================
+  const SUPABASE_URL = 'https://ljnpgcbkaysamvuuuumy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqbnBnY2JrYXlzYW12dXV1dW15Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2ODM1MDQsImV4cCI6MjEwNjI1OTUwNH0.QBNgiR0GLKNGlYtfRjoygKTf5Ml53LCAIsZTRUJyMoA';  // публичният anon ключ (защитен от RLS)
+  const HAS_BACKEND = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+  const PHOTO_BUCKET = 'submission-photos';
+  const MAX_PHOTO = 5 * 1024 * 1024;
+  const PHOTO_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+
+  const CENTER = { lat: 41.4709, lng: 25.6546 }; // център на Крумовград
+
+  // ================= Езици =================
+  const LANGS = ['bg', 'en', 'el', 'tr'];
+  const LANG_NAMES = { bg: 'Български', en: 'English', el: 'Ελληνικά', tr: 'Türkçe' };
+  const LOCALES = { bg: 'bg-BG', en: 'en-GB', el: 'el-GR', tr: 'tr-TR' };
+
+  // ================= Данни =================
+  // 1:1 с таблицата public.categories. Цветовете идват от CSS (--cat-*), за да следват темата.
+  const CATEGORIES = [
+    { id: 'nature',  name_bg: 'Природа', name_en: 'Nature',   name_el: 'Φύση',     name_tr: 'Doğa',           sort_order: 1 },
+    { id: 'history', name_bg: 'История', name_en: 'History',  name_el: 'Ιστορία',  name_tr: 'Tarih',          sort_order: 2 },
+    { id: 'water',   name_bg: 'Вода',    name_en: 'Water',    name_el: 'Νερό',     name_tr: 'Su',             sort_order: 3 },
+    { id: 'temples', name_bg: 'Храмове', name_en: 'Churches', name_el: 'Ναοί',     name_tr: 'İbadethaneler',  sort_order: 4 },
+  ];
+
+  const ICONS = {
+    nature:  '<path d="m2.5 19 6.2-9.5 3.8 5.6 2.6-3.6L21.5 19z"/><circle cx="17" cy="6" r="2"/>',
+    history: '<path d="M3 21h18"/><path d="M5 21V10M9.5 21V10M14.5 21V10M19 21V10"/><path d="M3 10h18L12 3.5z"/>',
+    water:   '<path d="M2 7.5c1.7 0 1.7-1.5 3.3-1.5s1.7 1.5 3.4 1.5 1.6-1.5 3.3-1.5 1.7 1.5 3.3 1.5S17 6 18.7 6s1.6 1.5 3.3 1.5"/><path d="M2 12.5c1.7 0 1.7-1.5 3.3-1.5s1.7 1.5 3.4 1.5 1.6-1.5 3.3-1.5 1.7 1.5 3.3 1.5S17 11 18.7 11s1.6 1.5 3.3 1.5"/><path d="M2 17.5c1.7 0 1.7-1.5 3.3-1.5s1.7 1.5 3.4 1.5 1.6-1.5 3.3-1.5 1.7 1.5 3.3 1.5S17 16 18.7 16s1.6 1.5 3.3 1.5"/>',
+    temples: '<path d="M12 2v4M10 4h4"/><path d="M5 21v-9l7-5.5 7 5.5v9z"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/>',
+  };
+
+  // 1:1 с таблицата public.places. null = непознато → „Не е попълнено“. Координатите са приблизителни.
+  const PLACES = [
+    {
+      id: 'valchi-dol', category_id: 'nature',
+      name_bg: 'Резерват „Вълчи дол“',
+      name_en: 'Valchi Dol Reserve',
+      name_el: 'Φυσικό καταφύγιο «Βάλτσι Ντολ»',
+      name_tr: 'Valçi Dol Doğa Koruma Alanı',
+      description_bg: 'Единственият строг резерват в Източните Родопи (обявен 1980 г., ок. 776 ха), южно от яз. „Студен кладенец“. Създаден за опазване на колония белоглави лешояди; тук са установени 23 вида грабливи птици.',
+      description_en: 'The only strict nature reserve in the Eastern Rhodopes (designated 1980, approx. 776 ha), south of Studen Kladenets reservoir. Created to protect a griffon vulture colony; 23 species of birds of prey have been recorded here.',
+      description_el: 'Το μοναδικό αυστηρό φυσικό καταφύγιο στην Ανατολική Ροδόπη (ανακηρύχθηκε το 1980, περ. 776 εκτάρια), νότια του ταμιευτήρα «Στούντεν Κλάντενετς». Δημιουργήθηκε για την προστασία μιας αποικίας όρνιων· εδώ έχουν καταγραφεί 23 είδη αρπακτικών πουλιών.',
+      description_tr: 'Doğu Rodoplar’daki tek mutlak koruma alanı (1980’de ilan edildi, yaklaşık 776 ha), Studen Kladenets Barajı’nın güneyinde. Bir kızıl akbaba kolonisini korumak için kuruldu; burada 23 yırtıcı kuş türü kaydedilmiştir.',
+      lat: 41.6000, lng: 25.6830, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'Строг резерват – движи се само по обозначената екопътека и спазвай режима на резервата.',
+      access_note_en: 'Strict reserve – stay on the marked eco-trail and follow the reserve rules.',
+      access_note_el: 'Αυστηρό καταφύγιο – κινηθείτε μόνο στο σηματοδοτημένο οικολογικό μονοπάτι και τηρείτε τους κανόνες του καταφυγίου.',
+      access_note_tr: 'Mutlak koruma alanı – yalnızca işaretli eko-patikada yürüyün ve alanın kurallarına uyun.',
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://bg.wikipedia.org/wiki/Вълчи_дол_(резерват)',
+      status: 'approved',
+    },
+    {
+      id: 'studen-kladenets', category_id: 'water',
+      name_bg: 'Яз. „Студен кладенец“ и Големият сипей',
+      name_en: 'Studen Kladenets Reservoir & Golemiyat Sipey',
+      name_el: 'Ταμιευτήρας «Στούντεν Κλάντενετς» και Γκόλεμιατ Σιπέι',
+      name_tr: 'Studen Kladenets Barajı ve Golemiyat Sipey',
+      description_bg: 'Първият язовир по средното течение на Арда – дълъг ок. 28 км, със заливи и скални откоси. На северния му бряг е защитената местност „Големият сипей“ (обявена 2001 г.) – едно от най-важните гнездовища на белоглавия лешояд в България.',
+      description_en: 'The first reservoir on the middle course of the Arda – about 28 km long, with bays and rocky slopes. On its northern shore lies the Golemiyat Sipey protected site (designated 2001), one of the most important griffon vulture nesting sites in Bulgaria.',
+      description_el: 'Ο πρώτος ταμιευτήρας στον μέσο ρου του Άρδα – μήκους περίπου 28 χλμ., με κόλπους και βραχώδεις πλαγιές. Στη βόρεια όχθη του βρίσκεται η προστατευόμενη περιοχή «Γκόλεμιατ Σιπέι» (ανακηρύχθηκε το 2001), ένας από τους σημαντικότερους τόπους φωλεοποίησης του όρνιου στη Βουλγαρία.',
+      description_tr: 'Arda Nehri’nin orta kesimindeki ilk baraj gölü – yaklaşık 28 km uzunluğunda, koyları ve kayalık yamaçlarıyla. Kuzey kıyısında, Bulgaristan’daki en önemli kızıl akbaba yuvalama alanlarından biri olan Golemiyat Sipey koruma alanı (2001’de ilan edildi) yer alır.',
+      lat: 41.6150, lng: 25.6000, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'Маркерът е на южния бряг, в община Крумовград. Големият сипей е на северния бряг – в землищата на Рабово и Бял кладенец (община Стамболово).',
+      access_note_en: 'The marker is on the southern shore, in Krumovgrad municipality. Golemiyat Sipey is on the northern shore – near Rabovo and Byal Kladenets (Stambolovo municipality).',
+      access_note_el: 'Το σημάδι βρίσκεται στη νότια όχθη, στον δήμο Κρούμοβγκραντ. Το Γκόλεμιατ Σιπέι είναι στη βόρεια όχθη – κοντά στα χωριά Ράμποβο και Μπιάλ Κλάντενετς (δήμος Σταμπόλοβο).',
+      access_note_tr: 'İşaret, Krumovgrad Belediyesi’ndeki güney kıyıdadır. Golemiyat Sipey kuzey kıyıda, Rabovo ve Byal Kladenets köylerinin yakınındadır (Stambolovo Belediyesi).',
+      drone_video_url: null, photo_url: null,
+      source_url: 'http://newthraciangold.eu/cmspage.php?id=99&lng=bg',
+      status: 'approved',
+    },
+    {
+      id: 'kovil', category_id: 'history',
+      name_bg: 'Тракийски култов комплекс Ковил (Ак Кая)',
+      name_en: 'Kovil Thracian Cult Complex (Ak Kaya)',
+      name_el: 'Θρακικό λατρευτικό συγκρότημα Κόβιλ (Ακ Καγιά)',
+      name_tr: 'Kovil Trak Kült Kompleksi (Ak Kaya)',
+      description_bg: 'Скално светилище, крепост и некропол на хребет от бели вулканични туфи (м. Ак Кая – „Бялата скала“) край с. Ковил. В скалите са изсечени олтари, канали, шарапана и ниши. Керамиката е от късната бронзова и ранната желязна епоха.',
+      description_en: 'A rock sanctuary, fortress and necropolis on a ridge of white volcanic tuff (Ak Kaya – “White Rock”) near the village of Kovil. Altars, channels, a wine press and niches are carved into the rock. Pottery dates to the Late Bronze and Early Iron Age.',
+      description_el: 'Βραχώδες ιερό, φρούριο και νεκρόπολη σε κορυφογραμμή από λευκό ηφαιστειακό τόφφο (θέση Ακ Καγιά – «Λευκός Βράχος») κοντά στο χωριό Κόβιλ. Στους βράχους είναι λαξευμένοι βωμοί, αύλακες, ληνός και κόγχες. Η κεραμική χρονολογείται στην Ύστερη Εποχή του Χαλκού και στην Πρώιμη Εποχή του Σιδήρου.',
+      description_tr: 'Kovil köyü yakınında, beyaz volkanik tüften bir sırt üzerinde (Ak Kaya mevkii) kaya tapınağı, kale ve nekropol. Kayalara sunaklar, kanallar, bir şarap işliği ve nişler oyulmuştur. Seramikler Geç Tunç ve Erken Demir Çağı’na tarihlenir.',
+      lat: 41.5150, lng: 25.6603, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'През обекта минава пътека, която свързва две махали на селото.',
+      access_note_en: 'A path runs through the site, connecting two neighbourhoods of the village.',
+      access_note_el: 'Από τον χώρο περνά ένα μονοπάτι που συνδέει δύο συνοικίες του χωριού.',
+      access_note_tr: 'Alanın içinden köyün iki mahallesini birbirine bağlayan bir patika geçer.',
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://ahrida.org/landmark/thracian-cult-center-near-kovil-village/',
+      status: 'approved',
+    },
+    {
+      id: 'dyushun-dere', category_id: 'water',
+      name_bg: 'Дюшун дере',
+      name_en: 'Dyushun Dere',
+      name_el: 'Ντιουσούν Ντερέ',
+      name_tr: 'Düşün Dere',
+      description_bg: 'Река край с. Джанка, приток на Крумовица. Във вулканичните скали е издълбала каньон с водопади, ниши и въртопи.',
+      description_en: 'A river near the village of Dzhanka, a tributary of the Krumovitsa. It has carved a canyon with waterfalls, niches and whirlpools into the volcanic rock.',
+      description_el: 'Ποτάμι κοντά στο χωριό Τζάνκα, παραπόταμος του Κρούμοβιτσα. Στα ηφαιστειακά πετρώματα έχει σκάψει ένα φαράγγι με καταρράκτες, κόγχες και δίνες.',
+      description_tr: 'Canka köyü yakınında, Krumovitsa Nehri’nin bir kolu. Volkanik kayaları oyarak şelaleler, nişler ve girdaplarla dolu bir kanyon oluşturmuştur.',
+      lat: 41.5730, lng: 25.6710, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'Тръгва се от края на с. Джанка – ок. 500 м (ок. 15 мин) пеша до реката. Най-достъпно при маловодие през сухите месеци. Внимание: дълбоки въртопи.',
+      access_note_en: 'Start at the end of Dzhanka village – about 500 m (~15 min) on foot to the river. Easiest when the water is low in dry months. Caution: deep whirlpools.',
+      access_note_el: 'Ξεκινήστε από την άκρη του χωριού Τζάνκα – περίπου 500 μ. (~15 λεπτά) με τα πόδια ως το ποτάμι. Πιο προσβάσιμο όταν τα νερά είναι χαμηλά τους ξηρούς μήνες. Προσοχή: βαθιές δίνες.',
+      access_note_tr: 'Canka köyünün ucundan başlayın – nehre yürüyerek yaklaşık 500 m (~15 dk). Kurak aylarda su azken ulaşmak en kolaydır. Dikkat: derin girdaplar.',
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://keepliving.eu/djushun-dere-djanka/',
+      status: 'approved',
+    },
+    {
+      id: 'asara', category_id: 'history',
+      name_bg: 'Крепост Асара',
+      name_en: 'Asara Fortress',
+      name_el: 'Φρούριο Ασάρα',
+      name_tr: 'Asara Kalesi',
+      description_bg: 'Крепост край с. Красино с останки от тракийския период и Средновековието. Контролирала е част от долината на Крумовица. Днес стените са обрасъл каменен насип.',
+      description_en: 'A fortress near the village of Krasino with remains from the Thracian period and the Middle Ages. It controlled part of the Krumovitsa valley. Today the walls are an overgrown stone embankment.',
+      description_el: 'Φρούριο κοντά στο χωριό Κράσινο με κατάλοιπα από τη θρακική περίοδο και τον Μεσαίωνα. Έλεγχε τμήμα της κοιλάδας του Κρούμοβιτσα. Σήμερα τα τείχη είναι ένα κατάφυτο πέτρινο ανάχωμα.',
+      description_tr: 'Krasino köyü yakınında, Trak dönemi ve Orta Çağ’dan kalıntılar barındıran bir kale. Krumovitsa vadisinin bir bölümünü kontrol ediyordu. Bugün surlar, bitki örtüsüyle kaplı bir taş yığınıdır.',
+      lat: 41.5756, lng: 25.6789, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'На ок. 0,7 км северозападно от центъра на с. Красино.',
+      access_note_en: 'About 0.7 km north-west of the centre of Krasino.',
+      access_note_el: 'Περίπου 0,7 χλμ. βορειοδυτικά από το κέντρο του χωριού Κράσινο.',
+      access_note_tr: 'Krasino köy merkezinin yaklaşık 0,7 km kuzeybatısında.',
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://ahrida.org/landmark/крепост-асара-с-красино/',
+      status: 'approved',
+    },
+    {
+      id: 'oreshari', category_id: 'nature',
+      name_bg: 'Защитена местност „Орешари“',
+      name_en: 'Oreshari Protected Site',
+      name_el: 'Προστατευόμενη περιοχή «Ορέσαρι»',
+      name_tr: 'Oreşari Koruma Alanı',
+      description_bg: 'Защитена местност (обявена 1999 г., ок. 55 ха) в землището на с. Орешари. Опазва местообитания на защитени видове – тис, черен щъркел, египетски лешояд – и източнородопски пейзаж със скални венци, мостове, пещери и тракийски скални ниши.',
+      description_en: 'A protected site (designated 1999, approx. 55 ha) near the village of Oreshari. It protects habitats of species such as yew, black stork and Egyptian vulture, and an Eastern Rhodope landscape of cliffs, rock arches, caves and Thracian rock niches.',
+      description_el: 'Προστατευόμενη περιοχή (ανακηρύχθηκε το 1999, περ. 55 εκτάρια) κοντά στο χωριό Ορέσαρι. Προστατεύει ενδιαιτήματα ειδών όπως ο ίταμος, ο μαύρος πελαργός και ο ασπροπάρης, καθώς και ένα τοπίο της Ανατολικής Ροδόπης με βραχώδεις κορυφογραμμές, φυσικές αψίδες, σπήλαια και θρακικές λαξευτές κόγχες.',
+      description_tr: 'Oreşari köyü yakınında bir koruma alanı (1999’da ilan edildi, yaklaşık 55 ha). Porsuk ağacı, kara leylek ve küçük akbaba gibi türlerin yaşam alanlarını; kayalık sırtlar, doğal kaya köprüleri, mağaralar ve Trak kaya nişleriyle bir Doğu Rodop manzarasını korur.',
+      lat: 41.5988, lng: 25.7367, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: null, access_note_en: null, access_note_el: null, access_note_tr: null,
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://www.krumovgrad.bg/za-obshtinata/turizam/prirodni-zabelezhitelnosti/98-drugi-zashtiteni-mestnosti.html',
+      status: 'approved',
+    },
+    {
+      id: 'sv-atanasiy-chernichevo', category_id: 'temples',
+      name_bg: 'Църква „Св. Атанасий“ – Черничево',
+      name_en: 'St. Athanasius Church – Chernichevo',
+      name_el: 'Ναός «Άγιος Αθανάσιος» – Τσερνίτσεβο',
+      name_tr: 'Sveti Atanasiy Kilisesi – Çerniçevo',
+      description_bg: 'Възрожденска църква, построена 1847–1848 г. Пострадала при опожаряването на селото през 1913 г. и възстановена от местните жители през 1921–1922 г.',
+      description_en: 'A National Revival church built in 1847–1848. It was damaged when the village was burned in 1913 and restored by the locals in 1921–1922.',
+      description_el: 'Εκκλησία της περιόδου της βουλγαρικής Εθνικής Αναγέννησης, χτισμένη το 1847–1848. Υπέστη ζημιές όταν πυρπολήθηκε το χωριό το 1913 και αναστηλώθηκε από τους κατοίκους το 1921–1922.',
+      description_tr: '1847–1848 yıllarında inşa edilmiş, Bulgar Ulusal Uyanış dönemine ait bir kilise. 1913’te köyün yakılması sırasında hasar gördü ve 1921–1922’de köylüler tarafından onarıldı.',
+      lat: 41.3496, lng: 25.7794, coords_approx: true,
+      difficulty: null, coverage: null,
+      season_bg: null, season_en: null, season_el: null, season_tr: null,
+      access_note_bg: 'В центъра на християнската махала на с. Черничево.',
+      access_note_en: 'In the centre of the Christian quarter of Chernichevo.',
+      access_note_el: 'Στο κέντρο της χριστιανικής συνοικίας του Τσερνίτσεβο.',
+      access_note_tr: 'Çerniçevo’nun Hristiyan mahallesinin merkezinde.',
+      drone_video_url: null, photo_url: null,
+      source_url: 'https://opoznai.bg/view/tzarkva-sv-atanasii-chernichevo',
+      status: 'approved',
+    },
+  ];
+
+  // Граница на община Крумовград [lat, lng] – опростена от OpenStreetMap (relation 1952403), © OSM contributors, ODbL.
+  const BOUNDARY = [
+    [41.4197,25.4666],[41.3992,25.4884],[41.3951,25.4820],[41.3909,25.4892],[41.3870,25.4826],[41.3773,25.4879],[41.3441,25.4760],[41.3466,25.5377],
+    [41.3377,25.5368],[41.3201,25.5565],[41.3188,25.5522],[41.3191,25.5745],[41.3042,25.6086],[41.3146,25.6582],[41.2910,25.7117],[41.3173,25.7196],
+    [41.3150,25.7445],[41.3246,25.7629],[41.3210,25.7811],[41.3328,25.7891],[41.3380,25.8173],[41.3481,25.8221],[41.3274,25.8543],[41.3280,25.8727],
+    [41.3128,25.8686],[41.3044,25.8842],[41.3084,25.9098],[41.3210,25.9352],[41.3198,25.9478],[41.3305,25.9566],[41.3288,25.9464],[41.3381,25.9408],
+    [41.3502,25.9441],[41.3584,25.9333],[41.3705,25.9450],[41.3696,25.9046],[41.3898,25.9196],[41.3861,25.9053],[41.3951,25.8944],[41.3964,25.8358],
+    [41.4085,25.8309],[41.4143,25.8203],[41.4359,25.8195],[41.4413,25.8249],[41.4362,25.8309],[41.4531,25.8415],[41.4528,25.8523],[41.4627,25.8558],
+    [41.4689,25.8684],[41.4842,25.8478],[41.4782,25.8346],[41.5054,25.8123],[41.5056,25.7935],[41.5183,25.7906],[41.5240,25.7648],[41.5369,25.7551],
+    [41.5449,25.7598],[41.5395,25.7848],[41.5521,25.7809],[41.5787,25.7912],[41.5859,25.7869],[41.5890,25.8062],[41.6129,25.8403],[41.6244,25.8341],
+    [41.6232,25.8250],[41.6308,25.8351],[41.6375,25.8311],[41.6479,25.8356],[41.6502,25.8003],[41.6600,25.7927],[41.6529,25.7801],[41.6570,25.7741],
+    [41.6528,25.7611],[41.6223,25.7442],[41.6102,25.7155],[41.6185,25.7075],[41.6146,25.7043],[41.6246,25.6730],[41.6086,25.6465],[41.6116,25.6409],
+    [41.6204,25.6430],[41.6224,25.6036],[41.6412,25.6030],[41.6407,25.5872],[41.6233,25.5832],[41.6142,25.5693],[41.6059,25.5676],[41.5632,25.6102],
+    [41.5460,25.6087],[41.5449,25.6003],[41.5239,25.5935],[41.5161,25.5796],[41.4960,25.5737],[41.4953,25.5817],[41.4838,25.5877],[41.4862,25.5954],
+    [41.4736,25.5872],[41.4695,25.5913],[41.4561,25.5872],[41.4576,25.5951],[41.4447,25.5972],[41.4370,25.5909],[41.4424,25.5655],[41.4316,25.5413],
+    [41.4156,25.5471],[41.4197,25.5267],[41.4141,25.5193],[41.4317,25.5107],[41.4400,25.4835],[41.4197,25.4666],
+  ];
+
+  // ================= Текстове BG / EN / EL / TR =================
+  // Плурализация: обекти { one, other } → Intl.PluralRules. Шаблони: {n}, {total}, {d}.
+  const STR = {
+    bg: {
+      docTitle: 'Krumovgrad — place to be',
+      metaDesc: 'Атлас на интересните места в община Крумовград – природа, история, вода и храмове в Източните Родопи.',
+      skip: 'Към местата',
+      navLabel: 'Основна навигация',
+      navThemes: 'Теми',
+      navPlaces: 'Места',
+      navAbout: 'За проекта',
+      langLabel: 'Език',
+      themeLabel: 'Тема',
+      themeLight: 'Светла',
+      themeDark: 'Тъмна',
+      themeSystem: 'Системна',
+      suggest: 'Предложи място',
+      heroBadge: 'Източни Родопи · Община Крумовград',
+      heroTitleA: 'Скали, реки и лешояди.',
+      heroTitleB: 'Всичко на една карта.',
+      heroLede: 'Полеви пътеводител за община Крумовград – тракийски светилища, каньони, резервати и тихи села, с маршрут и дрон кадри.',
+      searchLabel: 'Търси място',
+      searchPh: 'Къде искаш да отидеш?',
+      searchGo: 'Търси',
+      quickLabel: 'Бързи категории',
+      heroNearTitle: 'Най-близо до центъра',
+      noMatches: 'Няма намерени места.',
+      themesTitle: 'Какво ще откриеш',
+      themesLead: 'Четири начина да опознаеш края. Избери един, за да филтрираш картата.',
+      themes: {
+        nature: 'Резервати, скални венци и гнездата на лешоядите.',
+        history: 'Тракийски светилища и средновековни крепости.',
+        water: 'Арда, язовири и каньони с водопади.',
+        temples: 'Възрожденски църкви в тихите села.',
+      },
+      placesN: { one: '{n} място', other: '{n} места' },
+      exploreTitle: 'Всички места',
+      sortNote: 'Подредени по разстояние от центъра на Крумовград.',
+      filterPh: 'Филтрирай по име',
+      catsLabel: 'Категории',
+      all: 'Всички',
+      clear: 'Изчисти филтрите',
+      countOf: { one: '{n} от {total} място', other: '{n} от {total} места' },
+      empty: 'Няма места по тези критерии.',
+      approx: 'Координатите са приблизителни – проверявай на място.',
+      mapLabel: 'Карта на местата',
+      layersLabel: 'Подложка на картата',
+      layerMap: 'Карта',
+      layerSat: 'Сателит',
+      layerTopo: 'Терен',
+      fitAll: 'Цялата община',
+      showMap: 'Карта',
+      showList: 'Списък',
+      mapHint: 'Натисни върху картата, за да предложиш място на тази точка.',
+      zoomIn: 'Приближи',
+      zoomOut: 'Отдалечи',
+      aboutTitle: 'За проекта',
+      foot: 'Личен некомерсиален проект на Радо от Крумовград. Снимките и дрон видеата са авторски.',
+      credits: 'Описанията са кратки, с посочен източник. Граница на общината: © OpenStreetMap contributors (ODbL), опростена.',
+      suggestLead: 'Знаеш място, което липсва?',
+      suggestCta: 'Предложи го',
+      adminLink: 'Вход за администратор',
+      backTop: 'Нагоре ↑',
+      filmedBy: 'Заснето от',
+      toChannel: 'Към канала',
+      droneBy: 'Дрон кадри:',
+      droneBadge: 'Дрон',
+      centerShort: 'Крумовград',
+      distFrom: '{d} от центъра',
+      distHere: '{d} оттук',
+      distance: 'Разстояние от центъра',
+      crow: 'по права линия',
+      difficulty: 'Трудност',
+      season: 'Сезон',
+      coverage: 'Мобилен обхват',
+      access: 'Бележка за достъп',
+      coords: 'Координати',
+      approxShort: 'приблизителни',
+      notFilled: 'Не е попълнено',
+      diff: { easy: 'Лесно', moderate: 'Средно', hard: 'Трудно' },
+      cov: { good: 'Добър', partial: 'Частичен', none: 'Няма' },
+      navigate: 'Навигирай',
+      newTab: 'отваря Google Maps в нов раздел',
+      navNote: 'Маршрутът води до приблизителната точка – провери го преди тръгване.',
+      showOnMap: 'Покажи на картата',
+      share: 'Сподели',
+      copied: 'Линкът е копиран',
+      nearest: 'Наблизо',
+      droneTitle: 'Дрон видео',
+      dronePending: 'Авторското видео предстои.',
+      source: 'Източник на описанието',
+      close: 'Затвори',
+      formTitle: 'Предложи място',
+      formIntro: 'Предложенията се проверяват, преди да се появят на картата.',
+      fName: 'Име на мястото',
+      fCat: 'Категория',
+      fCatUnsure: 'Не съм сигурен/на',
+      fDesc: 'Кратко описание',
+      fDescHint: 'Какво има там и как се стига? (по желание)',
+      fCoords: 'Координати',
+      fLat: 'Ширина (lat)',
+      fLng: 'Дължина (lng)',
+      fCoordsHint: 'Десетични градуси. Може да поставиш двете стойности наведнъж в първото поле.',
+      useLoc: 'Използвай моята локация',
+      locating: 'Определяне…',
+      fPhoto: 'Снимка',
+      fPhotoHint: 'JPG, PNG или WebP, до 5 MB (по желание).',
+      send: 'Изпрати за одобрение',
+      sending: 'Изпращане…',
+      cancel: 'Откажи',
+      errName: 'Въведи име (поне 2 знака).',
+      errCoords: 'Въведи валидни координати – например 41.4709 и 25.6546.',
+      errOutside: 'Точката е извън община Крумовград.',
+      errPhotoType: 'Снимката трябва да е JPG, PNG или WebP.',
+      errPhotoSize: 'Снимката е по-голяма от 5 MB.',
+      errFix: 'Поправи отбелязаните полета.',
+      inside: 'В границите на община Крумовград ✓',
+      geoUnsupported: 'Браузърът не поддържа геолокация.',
+      geoDenied: 'Нямаме достъп до локацията. Разреши го или въведи координатите ръчно.',
+      geoFail: 'Локацията не можа да бъде определена. Въведи координатите ръчно.',
+      geoOutside: 'Локацията ти е извън община Крумовград – въведи координатите на мястото ръчно.',
+      demo: 'Демо режим: Supabase още не е свързан, затова предложението не е изпратено. Данните са проверени и са наред.',
+      ok: 'Благодарим! Предложението е изпратено и чака одобрение.',
+      fail: 'Изпращането не успя. Опитай отново по-късно.',
+      mapPopupIn: 'Предложи място тук',
+      mapPopupOut: 'Тази точка е извън община Крумовград.',
+    },
+    en: {
+      docTitle: 'Krumovgrad — place to be',
+      metaDesc: 'An atlas of the places worth visiting in Krumovgrad municipality – nature, history, water and churches in the Eastern Rhodopes.',
+      skip: 'Skip to places',
+      navLabel: 'Main navigation',
+      navThemes: 'Themes',
+      navPlaces: 'Places',
+      navAbout: 'About',
+      langLabel: 'Language',
+      themeLabel: 'Theme',
+      themeLight: 'Light',
+      themeDark: 'Dark',
+      themeSystem: 'System',
+      suggest: 'Suggest a place',
+      heroBadge: 'Eastern Rhodopes · Krumovgrad municipality',
+      heroTitleA: 'Rocks, rivers and vultures.',
+      heroTitleB: 'All on one map.',
+      heroLede: 'A field guide to Krumovgrad municipality – Thracian sanctuaries, canyons, nature reserves and quiet villages, with directions and drone footage.',
+      searchLabel: 'Search for a place',
+      searchPh: 'Where do you want to go?',
+      searchGo: 'Search',
+      quickLabel: 'Quick categories',
+      heroNearTitle: 'Closest to the centre',
+      noMatches: 'No places found.',
+      themesTitle: 'What you’ll find',
+      themesLead: 'Four ways to get to know the area. Pick one to filter the map.',
+      themes: {
+        nature: 'Reserves, cliffs and vulture colonies.',
+        history: 'Thracian sanctuaries and medieval fortresses.',
+        water: 'The Arda, reservoirs and waterfall canyons.',
+        temples: 'Revival-era churches in quiet villages.',
+      },
+      placesN: { one: '{n} place', other: '{n} places' },
+      exploreTitle: 'All places',
+      sortNote: 'Sorted by distance from Krumovgrad centre.',
+      filterPh: 'Filter by name',
+      catsLabel: 'Categories',
+      all: 'All',
+      clear: 'Clear filters',
+      countOf: { one: '{n} of {total} place', other: '{n} of {total} places' },
+      empty: 'No places match these filters.',
+      approx: 'Coordinates are approximate – check on site.',
+      mapLabel: 'Map of places',
+      layersLabel: 'Map style',
+      layerMap: 'Map',
+      layerSat: 'Satellite',
+      layerTopo: 'Terrain',
+      fitAll: 'Whole municipality',
+      showMap: 'Map',
+      showList: 'List',
+      mapHint: 'Tap the map to suggest a place at that point.',
+      zoomIn: 'Zoom in',
+      zoomOut: 'Zoom out',
+      aboutTitle: 'About the project',
+      foot: 'A personal, non-commercial project by Rado from Krumovgrad. Photos and drone videos are original work.',
+      credits: 'Descriptions are short and sourced. Municipality boundary: © OpenStreetMap contributors (ODbL), simplified.',
+      suggestLead: 'Know a place that’s missing?',
+      suggestCta: 'Suggest it',
+      adminLink: 'Admin sign-in',
+      backTop: 'Back to top ↑',
+      filmedBy: 'Filmed by',
+      toChannel: 'Visit channel',
+      droneBy: 'Drone footage:',
+      droneBadge: 'Drone',
+      centerShort: 'Krumovgrad',
+      distFrom: '{d} from the centre',
+      distHere: '{d} away',
+      distance: 'Distance from the centre',
+      crow: 'straight line',
+      difficulty: 'Difficulty',
+      season: 'Season',
+      coverage: 'Mobile coverage',
+      access: 'Access note',
+      coords: 'Coordinates',
+      approxShort: 'approximate',
+      notFilled: 'Not filled in',
+      diff: { easy: 'Easy', moderate: 'Moderate', hard: 'Hard' },
+      cov: { good: 'Good', partial: 'Partial', none: 'None' },
+      navigate: 'Navigate',
+      newTab: 'opens Google Maps in a new tab',
+      navNote: 'The route leads to the approximate point – check it before you set off.',
+      showOnMap: 'Show on map',
+      share: 'Share',
+      copied: 'Link copied',
+      nearest: 'Nearby',
+      droneTitle: 'Drone video',
+      dronePending: 'Original footage coming soon.',
+      source: 'Description source',
+      close: 'Close',
+      formTitle: 'Suggest a place',
+      formIntro: 'Suggestions are reviewed before they appear on the map.',
+      fName: 'Place name',
+      fCat: 'Category',
+      fCatUnsure: 'Not sure',
+      fDesc: 'Short description',
+      fDescHint: 'What is there and how do you get there? (optional)',
+      fCoords: 'Coordinates',
+      fLat: 'Latitude (lat)',
+      fLng: 'Longitude (lng)',
+      fCoordsHint: 'Decimal degrees. You can paste both values into the first field at once.',
+      useLoc: 'Use my location',
+      locating: 'Locating…',
+      fPhoto: 'Photo',
+      fPhotoHint: 'JPG, PNG or WebP, up to 5 MB (optional).',
+      send: 'Send for review',
+      sending: 'Sending…',
+      cancel: 'Cancel',
+      errName: 'Enter a name (at least 2 characters).',
+      errCoords: 'Enter valid coordinates – for example 41.4709 and 25.6546.',
+      errOutside: 'This point is outside Krumovgrad municipality.',
+      errPhotoType: 'The photo must be JPG, PNG or WebP.',
+      errPhotoSize: 'The photo is larger than 5 MB.',
+      errFix: 'Please fix the highlighted fields.',
+      inside: 'Inside Krumovgrad municipality ✓',
+      geoUnsupported: 'Your browser does not support geolocation.',
+      geoDenied: 'Location access was denied. Allow it or enter the coordinates manually.',
+      geoFail: 'Could not get your location. Enter the coordinates manually.',
+      geoOutside: 'You are outside Krumovgrad municipality – enter the place’s coordinates manually.',
+      demo: 'Demo mode: Supabase is not connected yet, so nothing was sent. Your data passed all checks.',
+      ok: 'Thank you! Your suggestion was sent and is awaiting review.',
+      fail: 'Sending failed. Please try again later.',
+      mapPopupIn: 'Suggest a place here',
+      mapPopupOut: 'This point is outside Krumovgrad municipality.',
+    },
+    el: {
+      docTitle: 'Krumovgrad — place to be',
+      metaDesc: 'Άτλας με τα αξιοθέατα του δήμου Κρούμοβγκραντ – φύση, ιστορία, νερό και ναοί στην Ανατολική Ροδόπη.',
+      skip: 'Μετάβαση στα μέρη',
+      navLabel: 'Κύρια πλοήγηση',
+      navThemes: 'Θέματα',
+      navPlaces: 'Μέρη',
+      navAbout: 'Σχετικά',
+      langLabel: 'Γλώσσα',
+      themeLabel: 'Εμφάνιση',
+      themeLight: 'Φωτεινή',
+      themeDark: 'Σκοτεινή',
+      themeSystem: 'Όπως το σύστημα',
+      suggest: 'Προτείνετε μέρος',
+      heroBadge: 'Ανατολική Ροδόπη · Δήμος Κρούμοβγκραντ',
+      heroTitleA: 'Βράχια, ποτάμια και όρνια.',
+      heroTitleB: 'Όλα σε έναν χάρτη.',
+      heroLede: 'Ένας οδηγός πεδίου για τον δήμο Κρούμοβγκραντ – θρακικά ιερά, φαράγγια, φυσικά καταφύγια και ήσυχα χωριά, με οδηγίες διαδρομής και πλάνα από drone.',
+      searchLabel: 'Αναζήτηση μέρους',
+      searchPh: 'Πού θέλετε να πάτε;',
+      searchGo: 'Αναζήτηση',
+      quickLabel: 'Γρήγορες κατηγορίες',
+      heroNearTitle: 'Πιο κοντά στο κέντρο',
+      noMatches: 'Δεν βρέθηκαν μέρη.',
+      themesTitle: 'Τι θα ανακαλύψετε',
+      themesLead: 'Τέσσερις τρόποι να γνωρίσετε την περιοχή. Επιλέξτε έναν για να φιλτράρετε τον χάρτη.',
+      themes: {
+        nature: 'Καταφύγια, βραχώδεις κορυφογραμμές και αποικίες όρνιων.',
+        history: 'Θρακικά ιερά και μεσαιωνικά φρούρια.',
+        water: 'Ο Άρδας, ταμιευτήρες και φαράγγια με καταρράκτες.',
+        temples: 'Εκκλησίες της εποχής της Αναγέννησης σε ήσυχα χωριά.',
+      },
+      placesN: { one: '{n} μέρος', other: '{n} μέρη' },
+      exploreTitle: 'Όλα τα μέρη',
+      sortNote: 'Ταξινομημένα κατά απόσταση από το κέντρο του Κρούμοβγκραντ.',
+      filterPh: 'Φιλτράρισμα κατά όνομα',
+      catsLabel: 'Κατηγορίες',
+      all: 'Όλα',
+      clear: 'Καθαρισμός φίλτρων',
+      countOf: { one: '{n} από {total} μέρος', other: '{n} από {total} μέρη' },
+      empty: 'Κανένα μέρος δεν ταιριάζει με αυτά τα φίλτρα.',
+      approx: 'Οι συντεταγμένες είναι κατά προσέγγιση – ελέγξτε επί τόπου.',
+      mapLabel: 'Χάρτης των μερών',
+      layersLabel: 'Υπόβαθρο χάρτη',
+      layerMap: 'Χάρτης',
+      layerSat: 'Δορυφόρος',
+      layerTopo: 'Ανάγλυφο',
+      fitAll: 'Όλος ο δήμος',
+      showMap: 'Χάρτης',
+      showList: 'Λίστα',
+      mapHint: 'Πατήστε στον χάρτη για να προτείνετε ένα μέρος σε εκείνο το σημείο.',
+      zoomIn: 'Μεγέθυνση',
+      zoomOut: 'Σμίκρυνση',
+      aboutTitle: 'Σχετικά με το έργο',
+      foot: 'Προσωπικό, μη εμπορικό έργο του Ράντο από το Κρούμοβγκραντ. Οι φωτογραφίες και τα βίντεο από drone είναι πρωτότυπα.',
+      credits: 'Οι περιγραφές είναι σύντομες και αναφέρουν πηγή. Όρια δήμου: © OpenStreetMap contributors (ODbL), απλοποιημένα.',
+      suggestLead: 'Γνωρίζετε ένα μέρος που λείπει;',
+      suggestCta: 'Προτείνετέ το',
+      adminLink: 'Είσοδος διαχειριστή',
+      backTop: 'Επιστροφή στην αρχή ↑',
+      filmedBy: 'Λήψη:',
+      toChannel: 'Στο κανάλι',
+      droneBy: 'Πλάνα drone:',
+      droneBadge: 'Drone',
+      centerShort: 'Κρούμοβγκραντ',
+      distFrom: '{d} από το κέντρο',
+      distHere: '{d} από εδώ',
+      distance: 'Απόσταση από το κέντρο',
+      crow: 'σε ευθεία γραμμή',
+      difficulty: 'Δυσκολία',
+      season: 'Εποχή',
+      coverage: 'Κάλυψη κινητής',
+      access: 'Σημείωση πρόσβασης',
+      coords: 'Συντεταγμένες',
+      approxShort: 'κατά προσέγγιση',
+      notFilled: 'Δεν έχει συμπληρωθεί',
+      diff: { easy: 'Εύκολο', moderate: 'Μέτριο', hard: 'Δύσκολο' },
+      cov: { good: 'Καλή', partial: 'Μερική', none: 'Καμία' },
+      navigate: 'Πλοήγηση',
+      newTab: 'ανοίγει τους Χάρτες Google σε νέα καρτέλα',
+      navNote: 'Η διαδρομή οδηγεί στο κατά προσέγγιση σημείο – ελέγξτε την πριν ξεκινήσετε.',
+      showOnMap: 'Εμφάνιση στον χάρτη',
+      share: 'Κοινοποίηση',
+      copied: 'Ο σύνδεσμος αντιγράφηκε',
+      nearest: 'Κοντά',
+      droneTitle: 'Βίντεο drone',
+      dronePending: 'Το πρωτότυπο βίντεο έρχεται σύντομα.',
+      source: 'Πηγή περιγραφής',
+      close: 'Κλείσιμο',
+      formTitle: 'Προτείνετε μέρος',
+      formIntro: 'Οι προτάσεις ελέγχονται πριν εμφανιστούν στον χάρτη.',
+      fName: 'Όνομα του μέρους',
+      fCat: 'Κατηγορία',
+      fCatUnsure: 'Δεν είμαι σίγουρος/η',
+      fDesc: 'Σύντομη περιγραφή',
+      fDescHint: 'Τι υπάρχει εκεί και πώς φτάνει κανείς; (προαιρετικά)',
+      fCoords: 'Συντεταγμένες',
+      fLat: 'Γεωγρ. πλάτος (lat)',
+      fLng: 'Γεωγρ. μήκος (lng)',
+      fCoordsHint: 'Δεκαδικές μοίρες. Μπορείτε να επικολλήσετε και τις δύο τιμές μαζί στο πρώτο πεδίο.',
+      useLoc: 'Χρήση της τοποθεσίας μου',
+      locating: 'Εντοπισμός…',
+      fPhoto: 'Φωτογραφία',
+      fPhotoHint: 'JPG, PNG ή WebP, έως 5 MB (προαιρετικά).',
+      send: 'Αποστολή για έγκριση',
+      sending: 'Αποστολή…',
+      cancel: 'Ακύρωση',
+      errName: 'Εισαγάγετε όνομα (τουλάχιστον 2 χαρακτήρες).',
+      errCoords: 'Εισαγάγετε έγκυρες συντεταγμένες – για παράδειγμα 41.4709 και 25.6546.',
+      errOutside: 'Το σημείο βρίσκεται εκτός του δήμου Κρούμοβγκραντ.',
+      errPhotoType: 'Η φωτογραφία πρέπει να είναι JPG, PNG ή WebP.',
+      errPhotoSize: 'Η φωτογραφία είναι μεγαλύτερη από 5 MB.',
+      errFix: 'Διορθώστε τα επισημασμένα πεδία.',
+      inside: 'Εντός του δήμου Κρούμοβγκραντ ✓',
+      geoUnsupported: 'Το πρόγραμμα περιήγησης δεν υποστηρίζει γεωεντοπισμό.',
+      geoDenied: 'Δεν υπάρχει πρόσβαση στην τοποθεσία. Επιτρέψτε την ή εισαγάγετε τις συντεταγμένες χειροκίνητα.',
+      geoFail: 'Δεν ήταν δυνατός ο εντοπισμός. Εισαγάγετε τις συντεταγμένες χειροκίνητα.',
+      geoOutside: 'Βρίσκεστε εκτός του δήμου Κρούμοβγκραντ – εισαγάγετε χειροκίνητα τις συντεταγμένες του μέρους.',
+      demo: 'Λειτουργία επίδειξης: το Supabase δεν έχει συνδεθεί ακόμη, οπότε δεν στάλθηκε τίποτα. Τα στοιχεία σας πέρασαν όλους τους ελέγχους.',
+      ok: 'Ευχαριστούμε! Η πρότασή σας στάλθηκε και αναμένει έγκριση.',
+      fail: 'Η αποστολή απέτυχε. Δοκιμάστε ξανά αργότερα.',
+      mapPopupIn: 'Προτείνετε μέρος εδώ',
+      mapPopupOut: 'Αυτό το σημείο είναι εκτός του δήμου Κρούμοβγκραντ.',
+    },
+    tr: {
+      docTitle: 'Krumovgrad — place to be',
+      metaDesc: 'Krumovgrad Belediyesi’ndeki görülmeye değer yerlerin atlası – Doğu Rodoplar’da doğa, tarih, su ve ibadethaneler.',
+      skip: 'Yerlere geç',
+      navLabel: 'Ana gezinme',
+      navThemes: 'Temalar',
+      navPlaces: 'Yerler',
+      navAbout: 'Proje hakkında',
+      langLabel: 'Dil',
+      themeLabel: 'Görünüm',
+      themeLight: 'Açık',
+      themeDark: 'Koyu',
+      themeSystem: 'Sistem',
+      suggest: 'Yer önerin',
+      heroBadge: 'Doğu Rodoplar · Krumovgrad Belediyesi',
+      heroTitleA: 'Kayalar, nehirler ve akbabalar.',
+      heroTitleB: 'Hepsi tek haritada.',
+      heroLede: 'Krumovgrad Belediyesi için bir arazi rehberi – Trak kutsal alanları, kanyonlar, koruma alanları ve sakin köyler; yol tarifi ve drone görüntüleriyle.',
+      searchLabel: 'Yer arayın',
+      searchPh: 'Nereye gitmek istersiniz?',
+      searchGo: 'Ara',
+      quickLabel: 'Hızlı kategoriler',
+      heroNearTitle: 'Merkeze en yakın',
+      noMatches: 'Hiç yer bulunamadı.',
+      themesTitle: 'Neler keşfedeceksiniz',
+      themesLead: 'Bölgeyi tanımanın dört yolu. Haritayı filtrelemek için birini seçin.',
+      themes: {
+        nature: 'Koruma alanları, kayalık sırtlar ve akbaba kolonileri.',
+        history: 'Trak kutsal alanları ve Orta Çağ kaleleri.',
+        water: 'Arda Nehri, barajlar ve şelaleli kanyonlar.',
+        temples: 'Sakin köylerde Uyanış dönemi kiliseleri.',
+      },
+      placesN: { one: '{n} yer', other: '{n} yer' },
+      exploreTitle: 'Tüm yerler',
+      sortNote: 'Krumovgrad merkezine uzaklığa göre sıralanmıştır.',
+      filterPh: 'Ada göre filtreleyin',
+      catsLabel: 'Kategoriler',
+      all: 'Tümü',
+      clear: 'Filtreleri temizle',
+      countOf: { one: '{n} / {total} yer', other: '{n} / {total} yer' },
+      empty: 'Bu filtrelere uyan yer yok.',
+      approx: 'Koordinatlar yaklaşıktır – yerinde kontrol edin.',
+      mapLabel: 'Yerlerin haritası',
+      layersLabel: 'Harita altlığı',
+      layerMap: 'Harita',
+      layerSat: 'Uydu',
+      layerTopo: 'Arazi',
+      fitAll: 'Tüm belediye',
+      showMap: 'Harita',
+      showList: 'Liste',
+      mapHint: 'O noktaya bir yer önermek için haritaya dokunun.',
+      zoomIn: 'Yakınlaştır',
+      zoomOut: 'Uzaklaştır',
+      aboutTitle: 'Proje hakkında',
+      foot: 'Krumovgradlı Rado’nun kişisel, ticari olmayan projesi. Fotoğraflar ve drone videoları özgündür.',
+      credits: 'Açıklamalar kısadır ve kaynak belirtilmiştir. Belediye sınırı: © OpenStreetMap contributors (ODbL), sadeleştirilmiş.',
+      suggestLead: 'Eksik bir yer mi biliyorsunuz?',
+      suggestCta: 'Önerin',
+      adminLink: 'Yönetici girişi',
+      backTop: 'Başa dön ↑',
+      filmedBy: 'Çekim:',
+      toChannel: 'Kanala git',
+      droneBy: 'Drone görüntüleri:',
+      droneBadge: 'Drone',
+      centerShort: 'Krumovgrad',
+      distFrom: 'merkeze {d}',
+      distHere: 'buraya {d}',
+      distance: 'Merkeze uzaklık',
+      crow: 'kuş uçuşu',
+      difficulty: 'Zorluk',
+      season: 'Mevsim',
+      coverage: 'Mobil kapsama',
+      access: 'Ulaşım notu',
+      coords: 'Koordinatlar',
+      approxShort: 'yaklaşık',
+      notFilled: 'Doldurulmamış',
+      diff: { easy: 'Kolay', moderate: 'Orta', hard: 'Zor' },
+      cov: { good: 'İyi', partial: 'Kısmi', none: 'Yok' },
+      navigate: 'Yol tarifi',
+      newTab: 'Google Haritalar’ı yeni sekmede açar',
+      navNote: 'Rota yaklaşık noktaya gider – yola çıkmadan önce kontrol edin.',
+      showOnMap: 'Haritada göster',
+      share: 'Paylaş',
+      copied: 'Bağlantı kopyalandı',
+      nearest: 'Yakındakiler',
+      droneTitle: 'Drone videosu',
+      dronePending: 'Özgün video yakında.',
+      source: 'Açıklamanın kaynağı',
+      close: 'Kapat',
+      formTitle: 'Yer önerin',
+      formIntro: 'Öneriler haritada görünmeden önce incelenir.',
+      fName: 'Yerin adı',
+      fCat: 'Kategori',
+      fCatUnsure: 'Emin değilim',
+      fDesc: 'Kısa açıklama',
+      fDescHint: 'Orada ne var ve nasıl gidilir? (isteğe bağlı)',
+      fCoords: 'Koordinatlar',
+      fLat: 'Enlem (lat)',
+      fLng: 'Boylam (lng)',
+      fCoordsHint: 'Ondalık derece. İki değeri birlikte ilk alana yapıştırabilirsiniz.',
+      useLoc: 'Konumumu kullan',
+      locating: 'Konum belirleniyor…',
+      fPhoto: 'Fotoğraf',
+      fPhotoHint: 'JPG, PNG veya WebP, en fazla 5 MB (isteğe bağlı).',
+      send: 'Onaya gönder',
+      sending: 'Gönderiliyor…',
+      cancel: 'Vazgeç',
+      errName: 'Bir ad girin (en az 2 karakter).',
+      errCoords: 'Geçerli koordinatlar girin – örneğin 41.4709 ve 25.6546.',
+      errOutside: 'Bu nokta Krumovgrad Belediyesi sınırlarının dışında.',
+      errPhotoType: 'Fotoğraf JPG, PNG veya WebP olmalıdır.',
+      errPhotoSize: 'Fotoğraf 5 MB’tan büyük.',
+      errFix: 'Lütfen işaretli alanları düzeltin.',
+      inside: 'Krumovgrad Belediyesi sınırları içinde ✓',
+      geoUnsupported: 'Tarayıcınız konum belirlemeyi desteklemiyor.',
+      geoDenied: 'Konum erişimine izin verilmedi. İzin verin veya koordinatları elle girin.',
+      geoFail: 'Konumunuz belirlenemedi. Koordinatları elle girin.',
+      geoOutside: 'Krumovgrad Belediyesi dışındasınız – yerin koordinatlarını elle girin.',
+      demo: 'Demo modu: Supabase henüz bağlı değil, bu yüzden hiçbir şey gönderilmedi. Verileriniz tüm kontrollerden geçti.',
+      ok: 'Teşekkürler! Öneriniz gönderildi ve onay bekliyor.',
+      fail: 'Gönderilemedi. Lütfen daha sonra tekrar deneyin.',
+      mapPopupIn: 'Burada bir yer önerin',
+      mapPopupOut: 'Bu nokta Krumovgrad Belediyesi sınırlarının dışında.',
+    },
+  };
+
+  // ================= Помощни =================
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* няма storage */ } },
+  };
+  const mq = (q) => window.matchMedia(q);
+  const onMq = (m, fn) => (m.addEventListener ? m.addEventListener('change', fn) : m.addListener(fn));
+  const reduceMotion = mq('(prefers-reduced-motion: reduce)');
+  const darkMQ = mq('(prefers-color-scheme: dark)');
+  const deskMQ = mq('(min-width: 1024px)');
+  const sheetMQ = mq('(max-width: 767.98px)');
+  const smooth = () => (reduceMotion.matches ? 'auto' : 'smooth');
+  const root = document.documentElement;
+
+  function detectLang() {
+    const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    for (const l of list) { const c = String(l).toLowerCase().split('-')[0]; if (LANGS.includes(c)) return c; }
+    return 'bg';
+  }
+  let lang = LANGS.includes(window.__KG_LANG) ? window.__KG_LANG : detectLang();
+  let places = PLACES.map(withDist);
+  const state = { q: '', cats: new Set(), activeId: null };
+
+  const t = (k) => STR[lang][k] ?? STR.en[k] ?? STR.bg[k] ?? k;
+  const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+  let pluralRules = new Intl.PluralRules(LOCALES[lang]);
+  let numFmt = new Intl.NumberFormat(LOCALES[lang]);
+  let kmFmt = makeKmFmt();
+  function makeKmFmt() {
+    try {
+      return new Intl.NumberFormat(LOCALES[lang], { style: 'unit', unit: 'kilometer', unitDisplay: 'short', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    } catch {
+      const f = new Intl.NumberFormat(LOCALES[lang], { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      return { format: (d) => `${f.format(d)} km` };
+    }
+  }
+  const fmtNum = (n) => numFmt.format(n);
+  function plural(key, count, vars = {}) {
+    const forms = t(key);
+    const form = forms[pluralRules.select(count)] ?? forms.other;
+    return fill(form, { n: fmtNum(count), ...vars });
+  }
+  const fmtKm = (d) => kmFmt.format(d);
+  const distFrom = (d) => fill(t('distFrom'), { d: fmtKm(d) });
+  const distHere = (d) => fill(t('distHere'), { d: fmtKm(d) });
+
+  // Съдържание от базата: избраният език → en → bg
+  const loc = (p, base) => p[`${base}_${lang}`] || p[`${base}_en`] || p[`${base}_bg`] || null;
+  const catOf = (id) => CATEGORIES.find((c) => c.id === id) || { id, name_bg: id, name_en: id };
+  const catName = (c) => c[`name_${lang}`] || c.name_en || c.name_bg;
+  const catVar = (id) => (CATEGORIES.some((c) => c.id === id) ? `var(--cat-${id})` : 'var(--cat-other)');
+  const svgIcon = (cat) => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[cat] || ICONS.nature}</svg>`;
+  const SVG = (paths, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths}</svg>`;
+  const ARROW = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+  const CHEV = SVG('<path d="m9 6 6 6-6 6"/>', 'i row-go');
+  const PIN = '<path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>';
+  const DRONE = '<rect x="9" y="10" width="6" height="4" rx="1"/><path d="M9 11 5 7M15 11l4-4M9 13l-4 4M15 13l4 4"/><circle cx="5" cy="7" r="1.6"/><circle cx="19" cy="7" r="1.6"/><circle cx="5" cy="17" r="1.6"/><circle cx="19" cy="17" r="1.6"/>';
+  const THEME_ICONS = {
+    light: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    dark: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>',
+    system: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  };
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  function safeUrl(u) {
+    if (!u) return null;
+    try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : null; } catch { return null; }
+  }
+  const cssId = (id) => (window.CSS && CSS.escape ? CSS.escape(id) : String(id).replace(/["\\]/g, '\\$&'));
+
+  // Търсене: малки букви според езика (турските İ/ı), без диакритики и гръцки тонове
+  function norm(s) {
+    return String(s ?? '').toLocaleLowerCase(LOCALES[lang])
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/ı/g, 'i').replace(/ς/g, 'σ')
+      .replace(/[„“”"«»'’‘]/g, '').replace(/[–—-]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  const NAME_KEYS = LANGS.map((l) => `name_${l}`);
+  const matches = (p, q) => !q || NAME_KEYS.some((k) => p[k] && norm(p[k]).includes(q));
+
+  function distKm(a, b) {
+    const R = 6371, r = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function withDist(p) { return { ...p, _d: distKm(CENTER, p) }; }
+  const byDist = (a, b) => a._d - b._d;
+
+  function inMunicipality(lat, lng) {
+    let inside = false;
+    for (let i = 0, j = BOUNDARY.length - 1; i < BOUNDARY.length; j = i++) {
+      const [yi, xi] = BOUNDARY[i], [yj, xj] = BOUNDARY[j];
+      if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  }
+
+  function setMsg(el, key, kind) {
+    el.dataset.msgKey = key || '';
+    el.textContent = key ? t(key) : '';
+    if (el.classList.contains('msg')) el.className = `msg${kind ? ' ' + kind : ''}`;
+  }
+  function setKey(el, key) { el.dataset.i18n = key; el.textContent = t(key); }
+
+  // ================= Тема =================
+  let themeChoice = ['light', 'dark', 'system'].includes(root.dataset.themeChoice) ? root.dataset.themeChoice : 'light';
+  const resolvedTheme = () => (themeChoice === 'system' ? (darkMQ.matches ? 'dark' : 'light') : themeChoice);
+  function applyTheme() {
+    const th = resolvedTheme();
+    root.dataset.theme = th;
+    root.dataset.themeChoice = themeChoice;
+    root.style.colorScheme = th;
+    const meta = $('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', th === 'dark' ? '#0D1718' : '#FAF8F4');
+    updateThemeUi();
+    if (map) applyTiles();
+  }
+  function updateThemeUi() {
+    $('#theme-ico').innerHTML = SVG(THEME_ICONS[themeChoice]);
+    const names = { light: t('themeLight'), dark: t('themeDark'), system: t('themeSystem') };
+    $('#theme-btn').setAttribute('aria-label', `${t('themeLabel')}: ${names[themeChoice]}`);
+    for (const b of $$('[data-theme-set]')) b.setAttribute('aria-checked', String(b.dataset.themeSet === themeChoice));
+  }
+  for (const el of $$('.mi-ico')) el.outerHTML = SVG(THEME_ICONS[el.dataset.ico]);
+  onMq(darkMQ, () => { if (themeChoice === 'system') applyTheme(); });
+
+  // ================= Падащи менюта =================
+  const menus = [];
+  function makeMenu(btn, list, onPick) {
+    const items = () => $$('[role^="menuitem"]', list);
+    const close = (refocus) => {
+      if (list.hidden) return;
+      list.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      if (refocus) btn.focus();
+    };
+    const open = (idx) => {
+      for (const m of menus) if (m.list !== list) m.close(false);
+      list.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      const its = items();
+      const cur = its.findIndex((i) => i.getAttribute('aria-checked') === 'true');
+      (its[idx ?? (cur >= 0 ? cur : 0)] || its[0]).focus();
+    };
+    btn.addEventListener('click', () => (list.hidden ? open() : close(false)));
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(e.key === 'ArrowUp' ? items().length - 1 : undefined); }
+    });
+    list.addEventListener('keydown', (e) => {
+      const its = items(), i = its.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); its[(i + 1) % its.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); its[(i - 1 + its.length) % its.length].focus(); }
+      else if (e.key === 'Home') { e.preventDefault(); its[0].focus(); }
+      else if (e.key === 'End') { e.preventDefault(); its[its.length - 1].focus(); }
+      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); }
+      else if (e.key === 'Tab') close(false);
+    });
+    list.addEventListener('click', (e) => {
+      const it = e.target.closest('[role^="menuitem"]');
+      if (!it) return;
+      onPick(it);
+      close(true);
+    });
+    menus.push({ btn, list, close });
+  }
+  document.addEventListener('pointerdown', (e) => {
+    for (const m of menus) if (!m.list.hidden && !m.list.contains(e.target) && !m.btn.contains(e.target)) m.close(false);
+  });
+
+  makeMenu($('#lang-btn'), $('#lang-list'), (it) => setLang(it.dataset.lang));
+  makeMenu($('#theme-btn'), $('#theme-list'), (it) => {
+    themeChoice = it.dataset.themeSet;
+    store.set('kg-theme', themeChoice);
+    applyTheme();
+  });
+
+  function setLang(l) {
+    if (!LANGS.includes(l) || l === lang) return;
+    lang = l;
+    store.set('kg-lang', l);
+    try {
+      const u = new URL(location.href);
+      if (u.searchParams.has('lang')) { u.searchParams.set('lang', l); history.replaceState(history.state, '', u.href); }
+    } catch { /* file:// и др. */ }
+    applyI18n();
+  }
+
+  // ================= Карта =================
+  const map = L.map('map', { zoomControl: false, scrollWheelZoom: false, zoomSnap: 0.25 }).setView([CENTER.lat, CENTER.lng], 10);
+  const zoomCtl = L.control.zoom({ position: 'bottomright' }).addTo(map);
+  // Скролът с колелцето се включва едва след клик върху картата, за да не „хваща“ страницата.
+  map.getContainer().addEventListener('click', () => map.scrollWheelZoom.enable());
+  map.getContainer().addEventListener('mouseleave', () => map.scrollWheelZoom.disable());
+
+  const boundary = L.polygon(BOUNDARY, { className: 'kg-boundary', interactive: false }).addTo(map);
+
+  // CARTO basemaps вече връщат „API KEY REQUIRED“ без ключ, затова „Карта“ ползва Esri Canvas (без ключ).
+  const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
+  const ATTR_CANVAS = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS User Community';
+  const canvas = (base, ref) => L.layerGroup([
+    L.tileLayer(`${ESRI}/Canvas/${base}/MapServer/tile/{z}/{y}/{x}`, { maxNativeZoom: 16, maxZoom: 19, attribution: ATTR_CANVAS }),
+    L.tileLayer(`${ESRI}/Canvas/${ref}/MapServer/tile/{z}/{y}/{x}`, { maxNativeZoom: 16, maxZoom: 19 }),
+  ]);
+  const TILES = {
+    light: () => canvas('World_Light_Gray_Base', 'World_Light_Gray_Reference'),
+    dark: () => canvas('World_Dark_Gray_Base', 'World_Dark_Gray_Reference'),
+    sat: () => L.layerGroup([
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19, className: 'tiles-sat',
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      }),
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, opacity: 0.85 }),
+    ]),
+    topo: () => L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      subdomains: 'abc', maxZoom: 17,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM | &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    }),
+  };
+  const tileCache = {};
+  let tileKey = null, tileLayer = null;
+  let layerChoice = (() => { const s = store.get('kg-layer'); return s === 'sat' || s === 'topo' ? s : 'map'; })();
+  // „Карта“ следва темата: светла → CARTO Voyager, тъмна → CARTO Dark Matter
+  function applyTiles() {
+    const k = layerChoice === 'map' ? resolvedTheme() : layerChoice;
+    if (k !== tileKey) {
+      if (tileLayer) map.removeLayer(tileLayer);
+      tileLayer = tileCache[k] || (tileCache[k] = TILES[k]());
+      tileLayer.addTo(map);
+      tileKey = k;
+    }
+    map.getContainer().classList.toggle('on-sat', k === 'sat');
+  }
+  function setLayer(k) {
+    layerChoice = ['map', 'sat', 'topo'].includes(k) ? k : 'map';
+    store.set('kg-layer', layerChoice);
+    for (const b of $$('#layers [data-layer]')) b.setAttribute('aria-pressed', String(b.dataset.layer === layerChoice));
+    applyTiles();
+  }
+  $('#layers').addEventListener('click', (e) => { const b = e.target.closest('[data-layer]'); if (b) setLayer(b.dataset.layer); });
+
+  function fitAll(animate) {
+    map.fitBounds(boundary.getBounds(), {
+      paddingTopLeft: [24, deskMQ.matches ? 76 : 72], paddingBottomRight: [24, deskMQ.matches ? 24 : 96],
+      animate: Boolean(animate) && !reduceMotion.matches,
+    });
+  }
+  $('#fit-btn').addEventListener('click', () => fitAll(true));
+
+  const centerMarker = L.marker([CENTER.lat, CENTER.lng], {
+    icon: L.divIcon({ className: 'center-mark', html: '<span class="cm-dot"></span><span class="cm-label"></span>', iconSize: [10, 10], iconAnchor: [5, 5] }),
+    interactive: false, keyboard: false, zIndexOffset: -100,
+  }).addTo(map);
+
+  const markerLayer = L.layerGroup().addTo(map);
+  const markers = new Map();
+
+  function buildMarkers() {
+    markerLayer.clearLayers();
+    markers.clear();
+    for (const p of places) {
+      const m = L.marker([p.lat, p.lng], {
+        icon: L.divIcon({
+          className: 'pin-wrap',
+          html: `<span class="pin" style="--c:${catVar(p.category_id)}">${svgIcon(p.category_id)}</span>`,
+          iconSize: [36, 36], iconAnchor: [18, 18], tooltipAnchor: [0, -22],
+        }),
+        keyboard: true, riseOnHover: true,
+      });
+      m.bindTooltip('', { direction: 'top', className: 'kg-tip' });
+      m.on('click', () => openDetail(p.id));
+      m.on('mouseover', () => setHover(p.id, true, false));
+      m.on('mouseout', () => setHover(p.id, false, false));
+      m.on('add', () => decorateMarker(m, p));
+      markers.set(p.id, m);
+    }
+  }
+
+  function decorateMarker(m, p) {
+    const el = m.getElement();
+    if (!el) return;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', `${loc(p, 'name')} – ${catName(catOf(p.category_id))}`);
+    el.classList.toggle('is-active', state.activeId === p.id);
+    if (!el.dataset.kb) {
+      el.dataset.kb = '1';
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); openDetail(p.id); }
+      });
+      el.addEventListener('focus', () => setHover(p.id, true, false));
+      el.addEventListener('blur', () => setHover(p.id, false, false));
+    }
+  }
+
+  // Подчертаване: картичка ⇄ пин
+  const cardEl = (id) => $(`.card[data-id="${cssId(id)}"]`);
+  function setHover(id, on, fromCard) {
+    const m = markers.get(id);
+    const el = m && m.getElement();
+    if (el) el.classList.toggle('is-hover', on);
+    if (m) {
+      m.setZIndexOffset(on ? 1000 : 0);
+      if (fromCard && deskMQ.matches && markerLayer.hasLayer(m)) { if (on) m.openTooltip(); else m.closeTooltip(); }
+    }
+    const card = cardEl(id);
+    if (card) card.classList.toggle('is-hover', on);
+  }
+
+  map.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+    const box = document.createElement('div');
+    box.className = 'map-pop';
+    const coords = document.createElement('div');
+    coords.className = 'mp-coords';
+    coords.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    box.append(coords);
+    if (inMunicipality(lat, lng)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn-primary';
+      b.textContent = t('mapPopupIn');
+      b.addEventListener('click', () => { map.closePopup(); openSuggest({ lat, lng }); });
+      box.append(b);
+    } else {
+      const msg = document.createElement('p');
+      msg.textContent = t('mapPopupOut');
+      box.append(msg);
+    }
+    L.popup({ autoPanPadding: [24, 80] }).setLatLng(e.latlng).setContent(box).openOn(map);
+  });
+
+  if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize({ debounceMoveend: true })).observe($('#map'));
+
+  // Мобилен изглед „Карта“ на цял екран
+  const mapOpenBtn = $('#map-open'), mapCloseBtn = $('#map-close');
+  let mapFitted = false;
+  function openMobileMap() {
+    if (deskMQ.matches) return;
+    document.body.classList.add('map-open');
+    requestAnimationFrame(() => {
+      map.invalidateSize();
+      if (!mapFitted) { fitAll(false); mapFitted = true; }
+    });
+    mapCloseBtn.focus({ preventScroll: true });
+  }
+  function closeMobileMap(refocus) {
+    if (!document.body.classList.contains('map-open')) return;
+    document.body.classList.remove('map-open');
+    if (refocus) mapOpenBtn.focus({ preventScroll: true });
+  }
+  mapOpenBtn.addEventListener('click', openMobileMap);
+  mapCloseBtn.addEventListener('click', () => closeMobileMap(true));
+  onMq(deskMQ, () => { document.body.classList.remove('map-open'); map.invalidateSize(); fitAll(false); });
+
+  // ================= Филтри + търсене =================
+  function visiblePlaces() {
+    const q = norm(state.q);
+    return places
+      .filter((p) => state.cats.size === 0 || state.cats.has(p.category_id))
+      .filter((p) => matches(p, q))
+      .sort(byDist);
+  }
+  const countIn = (id) => places.filter((p) => p.category_id === id).length;
+  const sortedCats = () => [...CATEGORIES].sort((a, b) => a.sort_order - b.sort_order);
+
+  function buildChips() {
+    const box = $('#chips');
+    box.innerHTML = '<button type="button" class="chip chip-all" data-cat="" aria-pressed="true"><span class="chip-label"></span></button>' +
+      sortedCats().map((c) => `<button type="button" class="chip" data-cat="${esc(c.id)}" style="--c:${catVar(c.id)}" aria-pressed="false"><span class="chip-label"></span><span class="chip-n"></span></button>`).join('');
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-cat]');
+      if (!b) return;
+      const id = b.dataset.cat;
+      if (!id) state.cats.clear();
+      else if (state.cats.has(id)) state.cats.delete(id);
+      else state.cats.add(id);
+      render();
+    });
+  }
+  function updateChips() {
+    for (const b of $$('#chips .chip')) {
+      const id = b.dataset.cat;
+      if (!id) {
+        $('.chip-label', b).textContent = t('all');
+        b.setAttribute('aria-pressed', String(state.cats.size === 0));
+        continue;
+      }
+      $('.chip-label', b).textContent = catName(catOf(id));
+      $('.chip-n', b).textContent = fmtNum(countIn(id));
+      b.setAttribute('aria-pressed', String(state.cats.has(id)));
+    }
+  }
+
+  function renderQuick() {
+    $('#quick').innerHTML = sortedCats().map((c) => `
+      <button type="button" class="qchip" data-cat-pick="${esc(c.id)}" style="--c:${catVar(c.id)}">
+        <span class="qi">${svgIcon(c.id)}</span><span>${esc(catName(c))}</span><span class="n">${esc(fmtNum(countIn(c.id)))}</span>
+      </button>`).join('');
+  }
+
+  const TILE_CLASS = ['t-big', 't-wide', '', 't-last'];
+  function renderBento() {
+    $('#bento').innerHTML = sortedCats().map((c, i) => `
+      <button type="button" class="tile ${TILE_CLASS[i] || ''}" data-cat-pick="${esc(c.id)}" style="--c:${catVar(c.id)}">
+        <span class="tile-ico">${svgIcon(c.id)}</span>
+        <span class="tile-text">
+          <span class="tile-name">${esc(catName(c))}</span>
+          <span class="tile-desc">${esc((t('themes') || {})[c.id] || '')}</span>
+        </span>
+        <span class="tile-foot"><span>${esc(plural('placesN', countIn(c.id)))}</span><span class="tile-go">${SVG(ARROW, '')}</span></span>
+      </button>`).join('');
+  }
+
+  function cardHtml(p) {
+    const c = catOf(p.category_id);
+    const photo = safeUrl(p.photo_url);
+    const name = loc(p, 'name');
+    const km = distFrom(p._d);
+    const drone = Boolean(safeUrl(p.drone_video_url));
+    const label = [name, catName(c), km, drone ? t('droneBadge') : null].filter(Boolean).join(' – ');
+    return `<li class="card${state.activeId === p.id ? ' is-active' : ''}" data-id="${esc(p.id)}" style="--c:${catVar(p.category_id)}">
+      <button type="button" class="card-btn" data-open="${esc(p.id)}" aria-label="${esc(label)}">
+        <span class="card-media">
+          <span class="ph" aria-hidden="true">${svgIcon(c.id)}</span>
+          ${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
+          <span class="card-tags">
+            <span class="tag"><span class="dot"></span>${esc(catName(c))}</span>
+            ${drone ? `<span class="tag tag-drone">${SVG(DRONE, '')}${esc(t('droneBadge'))}</span>` : ''}
+          </span>
+        </span>
+        <span class="card-body">
+          <span class="card-title">${esc(name)}</span>
+          <span class="card-meta">${SVG(PIN, '')}${esc(km)}</span>
+          <span class="card-desc">${esc(loc(p, 'description') || '')}</span>
+        </span>
+      </button>
+    </li>`;
+  }
+
+  function rowHtml(p, meta) {
+    return `<button type="button" class="row" style="--c:${catVar(p.category_id)}" data-open="${esc(p.id)}">
+      <span class="row-ico">${svgIcon(p.category_id)}</span>
+      <span class="row-t"><span class="row-name">${esc(loc(p, 'name'))}</span><span class="row-meta">${esc(meta)}</span></span>
+      ${CHEV}
+    </button>`;
+  }
+
+  // Hero: най-близкото място със снимка + следващите 3 по разстояние
+  function renderHeroAside() {
+    const sorted = [...places].sort(byDist);
+    const feat = sorted.find((p) => safeUrl(p.photo_url));
+    const rest = sorted.filter((p) => p !== feat).slice(0, 3);
+    $('#hero-feat').innerHTML = feat ? `
+      <button type="button" class="ha-feat" data-open="${esc(feat.id)}" style="--c:${catVar(feat.category_id)}">
+        <span class="ph" aria-hidden="true">${svgIcon(feat.category_id)}</span>
+        <img src="${esc(safeUrl(feat.photo_url))}" alt="" loading="lazy" decoding="async" onerror="this.remove()">
+        <span class="card-tags"><span class="tag"><span class="dot"></span>${esc(catName(catOf(feat.category_id)))}</span></span>
+        <span class="ha-cap"><span class="ha-name">${esc(loc(feat, 'name'))}</span><span class="ha-meta">${esc(distFrom(feat._d))}</span></span>
+      </button>` : '';
+    $('#hero-near').innerHTML = rest.map((p) => `<li>${rowHtml(p, `${catName(catOf(p.category_id))} · ${distFrom(p._d)}`)}</li>`).join('');
+  }
+
+  function renderCards(vis) {
+    const ul = $('#cards');
+    ul.innerHTML = vis.length
+      ? vis.map(cardHtml).join('')
+      : `<li class="empty"><p>${esc(t('empty'))}</p><button type="button" class="btn btn-secondary" data-action="clear">${esc(t('clear'))}</button></li>`;
+  }
+
+  function render() {
+    const vis = visiblePlaces();
+    const ids = new Set(vis.map((p) => p.id));
+    for (const p of places) {
+      const m = markers.get(p.id);
+      if (!m) continue;
+      const on = ids.has(p.id);
+      if (on && !markerLayer.hasLayer(m)) markerLayer.addLayer(m);
+      if (!on && markerLayer.hasLayer(m)) markerLayer.removeLayer(m);
+      m.setTooltipContent(esc(loc(p, 'name')));
+      if (on) decorateMarker(m, p);
+    }
+    updateChips();
+    renderQuick();
+    renderBento();
+    renderHeroAside();
+    renderCards(vis);
+    $('#count').textContent = vis.length === places.length
+      ? plural('placesN', places.length)
+      : plural('countOf', places.length, { n: fmtNum(vis.length), total: fmtNum(places.length) });
+    $('#clear-btn').hidden = !(state.q || state.cats.size);
+    if (!qList.hidden) renderSug();
+  }
+
+  function setQuery(v, from) {
+    state.q = v;
+    for (const inp of $$('.js-q')) if (inp !== from && inp.value !== v) inp.value = v;
+    render();
+  }
+  function clearFilters() {
+    state.cats.clear();
+    setQuery('', null);
+  }
+  function goExplore() {
+    const ex = $('#explore');
+    ex.scrollIntoView({ behavior: smooth() });
+    ex.focus({ preventScroll: true });
+  }
+
+  function syncActive() {
+    for (const c of $$('.card')) c.classList.toggle('is-active', c.dataset.id === state.activeId);
+    for (const [id, m] of markers) {
+      const el = m.getElement();
+      if (el) el.classList.toggle('is-active', id === state.activeId);
+    }
+  }
+
+  for (const inp of $$('.js-q')) {
+    inp.addEventListener('input', () => {
+      if (inp === hq) sugIdx = -1;
+      setQuery(inp.value, inp);
+      if (inp === hq) renderSug();
+    });
+  }
+
+  // Наведена/фокусирана картичка → подчертай пина
+  const cardsUl = $('#cards');
+  cardsUl.addEventListener('mouseover', (e) => {
+    const c = e.target.closest('.card');
+    if (c && !c.contains(e.relatedTarget)) setHover(c.dataset.id, true, true);
+  });
+  cardsUl.addEventListener('mouseout', (e) => {
+    const c = e.target.closest('.card');
+    if (c && !c.contains(e.relatedTarget)) setHover(c.dataset.id, false, true);
+  });
+  cardsUl.addEventListener('focusin', (e) => { const c = e.target.closest('.card'); if (c) setHover(c.dataset.id, true, true); });
+  cardsUl.addEventListener('focusout', (e) => { const c = e.target.closest('.card'); if (c) setHover(c.dataset.id, false, true); });
+
+  // Категория от hero / bento → филтър + към списъка
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cat-pick]');
+    if (!b) return;
+    state.cats = new Set([b.dataset.catPick]);
+    setQuery('', null);
+    goExplore();
+  });
+
+  // ================= Търсене в hero (combobox) =================
+  const hq = $('#q'), qList = $('#q-list');
+  let sugIdx = -1, sugItems = [];
+  function renderSug() {
+    const q = norm(state.q);
+    if (!q || document.activeElement !== hq) { closeSug(); return; }
+    sugItems = places.filter((p) => matches(p, q)).sort(byDist).slice(0, 6);
+    if (sugIdx >= sugItems.length) sugIdx = sugItems.length - 1;
+    qList.innerHTML = sugItems.length
+      ? sugItems.map((p, i) => `<li role="option" id="qo-${i}" class="hs-opt" data-open="${esc(p.id)}" aria-selected="${i === sugIdx}" style="--c:${catVar(p.category_id)}">
+          <span class="row-ico">${svgIcon(p.category_id)}</span>
+          <span class="row-t"><span class="row-name">${esc(loc(p, 'name'))}</span><span class="row-meta">${esc(catName(catOf(p.category_id)))} · ${esc(distFrom(p._d))}</span></span>
+        </li>`).join('')
+      : `<li class="hs-none" role="presentation">${esc(t('noMatches'))}</li>`;
+    qList.hidden = false;
+    hq.setAttribute('aria-expanded', 'true');
+    if (sugIdx >= 0) hq.setAttribute('aria-activedescendant', `qo-${sugIdx}`);
+    else hq.removeAttribute('aria-activedescendant');
+  }
+  function closeSug() {
+    qList.hidden = true;
+    hq.setAttribute('aria-expanded', 'false');
+    hq.removeAttribute('aria-activedescendant');
+    sugIdx = -1;
+  }
+  hq.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (qList.hidden) renderSug();
+      if (!sugItems.length || qList.hidden) return;
+      e.preventDefault();
+      sugIdx = e.key === 'ArrowDown' ? (sugIdx + 1) % sugItems.length : (sugIdx <= 0 ? sugItems.length - 1 : sugIdx - 1);
+      renderSug();
+      const opt = $(`#qo-${sugIdx}`);
+      if (opt) opt.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && !qList.hidden && sugIdx >= 0 && sugItems[sugIdx]) {
+      e.preventDefault();
+      const id = sugItems[sugIdx].id;
+      closeSug();
+      openDetail(id);
+    } else if (e.key === 'Escape' && !qList.hidden) {
+      e.preventDefault();
+      closeSug();
+    }
+  });
+  hq.addEventListener('focus', renderSug);
+  hq.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== hq) closeSug(); }, 120));
+  qList.addEventListener('mousedown', (e) => e.preventDefault()); // фокусът остава в полето
+  $('#hero-form').addEventListener('submit', (e) => { e.preventDefault(); closeSug(); hq.blur(); goExplore(); });
+
+  // ================= Навигация =================
+  const nav = $('#nav');
+  const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ================= Sheet / модал (общо за детайл и форма) =================
+  const halfH = () => Math.round(window.innerHeight * 0.64);
+  const fullH = () => window.innerHeight - 12;
+
+  function resetSheet(dlg) {
+    dlg.classList.remove('is-closing', 'is-dragging');
+    dlg.style.removeProperty('height');
+    dlg.style.removeProperty('transform');
+    dlg.style.removeProperty('--drag-y');
+  }
+
+  // Затваряне с кратка анимация; then() се вика след реалното затваряне
+  function closeDialog(dlg, then) {
+    if (!dlg.open) { if (then) then(); return; }
+    if (then) dlg.addEventListener('close', () => then(), { once: true });
+    if (dlg.classList.contains('is-closing')) return;
+    if (reduceMotion.matches) { dlg.close(); return; }
+    dlg.classList.add('is-closing');
+    let done = false;
+    const finish = () => { if (done) return; done = true; dlg.close(); };
+    const timer = setTimeout(finish, 340);
+    dlg.addEventListener('animationend', function h(e) {
+      if (e.target !== dlg || e.pseudoElement) return; // ::backdrop има своя анимация
+      dlg.removeEventListener('animationend', h);
+      clearTimeout(timer);
+      finish();
+    });
+  }
+
+  function initSheet(dlg, snaps) {
+    const top = $('[data-drag]', dlg), scroller = $('.sheet-scroll', dlg);
+    let drag = null;
+    top.addEventListener('pointerdown', (e) => {
+      if (!sheetMQ.matches || e.button > 0 || e.target.closest('button, a, input, select, textarea')) return;
+      drag = { y: e.clientY, t: performance.now(), h: dlg.getBoundingClientRect().height, dy: 0, off: 0, cur: null, id: e.pointerId, onGrab: Boolean(e.target.closest('.grab')) };
+      try { top.setPointerCapture(e.pointerId); } catch { /* стар браузър */ }
+      dlg.classList.add('is-dragging');
+    });
+    top.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      drag.dy = e.clientY - drag.y;
+      const maxH = fullH();
+      const minH = Math.min(snaps.includes('half') ? halfH() : maxH, drag.h);
+      let h = drag.h - drag.dy, off = 0;
+      if (h > maxH) h = maxH + (h - maxH) * 0.15;
+      if (h < minH) { off = minH - h; h = minH; }
+      dlg.style.height = `${h}px`;
+      dlg.style.transform = off ? `translateY(${off}px)` : '';
+      drag.off = off;
+      drag.cur = h;
+    });
+    const end = (e) => {
+      if (!drag || (e && e.pointerId !== drag.id)) return;
+      const d = drag;
+      drag = null;
+      dlg.classList.remove('is-dragging');
+      const v = d.dy / Math.max(1, performance.now() - d.t); // px/ms, + = надолу
+      if (d.off > 110 || (v > 0.7 && d.off > 24)) {
+        dlg.style.setProperty('--drag-y', `${d.off}px`);
+        closeDialog(dlg);
+        return;
+      }
+      dlg.style.removeProperty('height');
+      dlg.style.removeProperty('transform');
+      if (!snaps.includes('half')) return;
+      if (Math.abs(d.dy) < 4 && d.onGrab) {
+        dlg.dataset.snap = dlg.dataset.snap === 'full' ? 'half' : 'full';
+        return;
+      }
+      const h = d.cur ?? d.h;
+      dlg.dataset.snap = v < -0.5 ? 'full' : v > 0.5 ? 'half' : (h > (halfH() + fullH()) / 2 ? 'full' : 'half');
+    };
+    top.addEventListener('pointerup', end);
+    top.addEventListener('pointercancel', end);
+    if (snaps.includes('half')) {
+      scroller.addEventListener('scroll', () => {
+        if (sheetMQ.matches && dlg.dataset.snap === 'half' && scroller.scrollTop > 8) dlg.dataset.snap = 'full';
+      }, { passive: true });
+    }
+    // Esc → анимирано затваряне
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeDialog(dlg); });
+    // Клик върху фона затваря
+    dlg.addEventListener('click', (e) => {
+      if (e.target !== dlg) return;
+      const r = dlg.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeDialog(dlg);
+    });
+    dlg.addEventListener('close', () => resetSheet(dlg));
+  }
+
+  // ================= Детайл =================
+  const detail = $('#detail');
+  let lastFocus = null;
+  initSheet(detail, ['half', 'full']);
+
+  function droneCredit(p) {
+    if (!p.drone_author) return '';
+    const ch = safeUrl(p.drone_author_url);
+    return `<p class="credit"><span>${esc(t('filmedBy'))} <strong>${esc(p.drone_author)}</strong></span>${ch ? `<a href="${esc(ch)}" target="_blank" rel="noopener">${esc(t('toChannel'))}</a>` : ''}</p>`;
+  }
+
+  function mediaHtml(p) {
+    const u = safeUrl(p.drone_video_url);
+    const photo = safeUrl(p.photo_url);
+    const name = loc(p, 'name');
+    const label = `${t('droneTitle')}: ${name}`;
+    const ph = (text) => `<span class="ph">${svgIcon(p.category_id)}${text ? `<span>${esc(text)}</span>` : ''}</span>`;
+    if (u) {
+      const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+      if (yt) return `<div class="d-media is-video"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" title="${esc(label)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>${droneCredit(p)}`;
+      if (/\.(mp4|webm)(\?|#|$)/i.test(u)) return `<div class="d-media is-video"><video src="${esc(u)}" controls preload="metadata" playsinline aria-label="${esc(label)}"></video></div>${droneCredit(p)}`;
+      return `<div class="d-media">${ph('')}<div class="d-link"><a class="btn btn-primary" href="${esc(u)}" target="_blank" rel="noopener">${esc(t('droneTitle'))} ${SVG(ARROW)}</a></div></div>${droneCredit(p)}`;
+    }
+    if (photo) return `<div class="d-media">${ph('')}<img src="${esc(photo)}" alt="${esc(name)}" onerror="this.remove()"></div>`;
+    return `<div class="d-media">${ph(t('dronePending'))}</div>`;
+  }
+
+  function renderDetail(p) {
+    const c = catOf(p.category_id);
+    const val = (v) => (v ? esc(v) : `<span class="nf">${esc(t('notFilled'))}</span>`);
+    const diff = p.difficulty ? t('diff')[p.difficulty] : null;
+    const cov = p.coverage ? t('cov')[p.coverage] : null;
+    const near = places.filter((x) => x.id !== p.id)
+      .map((x) => ({ x, d: distKm(p, x) }))
+      .sort((a, b) => a.d - b.d).slice(0, 3);
+    const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
+    const src = safeUrl(p.source_url);
+    const photo = safeUrl(p.photo_url);
+    const hasVideo = Boolean(safeUrl(p.drone_video_url));
+    const coords = `${Number(p.lat).toFixed(4)}, ${Number(p.lng).toFixed(4)}`;
+    const name = loc(p, 'name');
+
+    detail.style.setProperty('--c', catVar(p.category_id));
+    $('#detail-cat').innerHTML = `<span class="dot"></span>${esc(catName(c))}`;
+    $('#detail-content').innerHTML = `
+      ${mediaHtml(p)}
+      <div class="d-grid">
+        <div class="d-main">
+          <h2 class="d-title" id="detail-title" tabindex="-1">${esc(name)}</h2>
+          <p class="d-sub">${SVG(PIN, '')}<span>${esc(distFrom(p._d))}</span>${p.coords_approx ? `<span class="approx-tag">≈ ${esc(t('approxShort'))}</span>` : ''}</p>
+          <p class="d-desc">${val(loc(p, 'description'))}</p>
+          <div class="d-actions">
+            <a class="btn btn-primary" href="${esc(navUrl)}" target="_blank" rel="noopener">
+              ${SVG('<path d="M3 11 21 3l-8 18-2-8z"/>')}
+              ${esc(t('navigate'))}<span class="visually-hidden"> (${esc(t('newTab'))})</span>
+            </a>
+            <button type="button" class="btn btn-secondary" data-action="show-on-map" data-id="${esc(p.id)}">
+              ${SVG('<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>')}${esc(t('showOnMap'))}
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="share" data-id="${esc(p.id)}">
+              ${SVG('<path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/>')}
+              <span class="share-lbl" aria-live="polite">${esc(t('share'))}</span>
+            </button>
+          </div>
+          ${p.coords_approx ? `<p class="d-note">${esc(t('navNote'))}</p>` : ''}
+          ${photo && hasVideo ? `<img class="d-photo" src="${esc(photo)}" alt="${esc(name)}" loading="lazy" onerror="this.remove()">` : ''}
+          ${src ? `<p class="src">${esc(t('source'))}: <a href="${esc(src)}" target="_blank" rel="noopener">${esc(new URL(src).hostname)}</a></p>` : ''}
+        </div>
+        <aside class="d-side">
+          <dl class="facts">
+            <div class="fact wide"><dt>${esc(t('distance'))}</dt><dd><span class="big">${esc(fmtKm(p._d))}</span> <span class="sub">${esc(t('crow'))}</span></dd></div>
+            <div class="fact"><dt>${esc(t('difficulty'))}</dt><dd>${val(diff)}</dd></div>
+            <div class="fact"><dt>${esc(t('season'))}</dt><dd>${val(loc(p, 'season'))}</dd></div>
+            <div class="fact"><dt>${esc(t('coverage'))}</dt><dd>${val(cov)}</dd></div>
+            <div class="fact"><dt>${esc(t('coords'))}</dt><dd>${coords}${p.coords_approx ? ` <span class="approx-tag">≈ ${esc(t('approxShort'))}</span>` : ''}</dd></div>
+            <div class="fact wide"><dt>${esc(t('access'))}</dt><dd>${val(loc(p, 'access_note'))}</dd></div>
+          </dl>
+          ${near.length ? `<h3 class="d-h3">${esc(t('nearest'))}</h3>
+          <ul class="near">${near.map(({ x, d }) => `<li>${rowHtml(x, `${catName(catOf(x.category_id))} · ${distHere(d)}`)}</li>`).join('')}</ul>` : ''}
+        </aside>
+      </div>`;
+  }
+
+  const placeUrl = (id) => `${location.href.split('#')[0]}#/${encodeURIComponent(id)}`;
+  function setHash(id) {
+    try { history.replaceState(null, '', id ? `#/${encodeURIComponent(id)}` : location.pathname + location.search); } catch { /* file:// и др. */ }
+  }
+
+  function openDetail(id) {
+    const p = places.find((x) => x.id === id);
+    if (!p) return;
+    closeSug();
+    const wasOpen = detail.open && !detail.classList.contains('is-closing');
+    if (!wasOpen) {
+      if (detail.open) { detail.close(); }
+      lastFocus = document.activeElement;
+    }
+    state.activeId = id;
+    renderDetail(p);
+    if (!detail.open) {
+      resetSheet(detail);
+      detail.dataset.snap = 'half';
+      detail.showModal();
+    }
+    $('.sheet-scroll', detail).scrollTop = 0;
+    $('#detail-title').focus({ preventScroll: true });
+    setHash(id);
+    syncActive();
+  }
+
+  function showOnMap(id) {
+    const p = places.find((x) => x.id === id);
+    if (!p) return;
+    if (!visiblePlaces().some((x) => x.id === id)) clearFilters();
+    lastFocus = null;
+    closeDialog(detail, () => {
+      const go = () => {
+        map.invalidateSize();
+        if (reduceMotion.matches) map.setView([p.lat, p.lng], 13);
+        else map.flyTo([p.lat, p.lng], 13, { duration: 0.9 });
+        const el = markers.get(id) && markers.get(id).getElement();
+        if (el) el.focus({ preventScroll: true });
+      };
+      if (deskMQ.matches) {
+        $('#explore').scrollIntoView({ behavior: smooth() });
+        go();
+      } else {
+        mapFitted = true;
+        openMobileMap();
+        requestAnimationFrame(go);
+      }
+    });
+  }
+
+  async function sharePlace(id, btn) {
+    const p = places.find((x) => x.id === id);
+    if (!p) return;
+    const url = placeUrl(id);
+    try {
+      if (navigator.share) { await navigator.share({ title: loc(p, 'name'), url }); return; }
+      await navigator.clipboard.writeText(url);
+      const lbl = $('.share-lbl', btn);
+      lbl.textContent = t('copied');
+      setTimeout(() => { if (document.contains(lbl)) lbl.textContent = t('share'); }, 2200);
+    } catch { /* отказано споделяне */ }
+  }
+
+  detail.addEventListener('close', () => {
+    setHash(null);
+    state.activeId = null;
+    syncActive();
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+    lastFocus = null;
+  });
+
+  function openFromHash() {
+    const m = location.hash.match(/^#\/(.+)$/);
+    if (!m) return;
+    let id;
+    try { id = decodeURIComponent(m[1]); } catch { return; }
+    if (places.some((p) => p.id === id) && !(detail.open && state.activeId === id)) openDetail(id);
+  }
+  window.addEventListener('hashchange', openFromHash);
+
+  // ================= Предложи място =================
+  const suggest = $('#suggest');
+  const form = $('#suggest-form');
+  const fName = $('#f-name'), fCat = $('#f-cat'), fDesc = $('#f-desc');
+  const fLat = $('#f-lat'), fLng = $('#f-lng'), fPhoto = $('#f-photo');
+  const coordsMsg = $('#coords-msg'), formStatus = $('#form-status');
+  let suggestOpener = null;
+  initSheet(suggest, ['full']);
+
+  function renderCatOptions() {
+    const cur = fCat.value;
+    fCat.innerHTML = `<option value="">${esc(t('fCatUnsure'))}</option>` +
+      sortedCats().map((c) => `<option value="${esc(c.id)}">${esc(catName(c))}</option>`).join('');
+    fCat.value = cur;
+  }
+
+  function parseCoord(s) {
+    const v = String(s).trim().replace(',', '.');
+    return /^-?\d{1,3}(\.\d+)?$/.test(v) ? Number(v) : NaN;
+  }
+  function readCoords() {
+    const lat = parseCoord(fLat.value), lng = parseCoord(fLng.value);
+    const valid = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+    return { lat, lng, valid, inside: valid && inMunicipality(lat, lng) };
+  }
+  function coordsError(c) { return !c.valid ? 'errCoords' : !c.inside ? 'errOutside' : null; }
+  function markCoords(errKey) {
+    for (const el of [fLat, fLng]) el.setAttribute('aria-invalid', String(Boolean(errKey)));
+  }
+
+  function checkCoordsLive() {
+    if (!fLat.value.trim() || !fLng.value.trim()) { setMsg(coordsMsg, ''); markCoords(null); return; }
+    const err = coordsError(readCoords());
+    markCoords(err);
+    setMsg(coordsMsg, err || 'inside', err ? 'err' : 'ok');
+  }
+
+  // „41.47, 25.65“ поставено в първото поле → разделя се на две
+  fLat.addEventListener('input', () => {
+    const m = fLat.value.match(/^\s*(-?\d{1,3}\.\d+)\s*[,;\s]\s*(-?\d{1,3}\.\d+)\s*$/);
+    if (m) { fLat.value = m[1]; fLng.value = m[2]; }
+    checkCoordsLive();
+  });
+  fLng.addEventListener('input', checkCoordsLive);
+  fName.addEventListener('input', () => {
+    if (fName.getAttribute('aria-invalid') === 'true' && fName.value.trim().length >= 2) {
+      fName.setAttribute('aria-invalid', 'false');
+      setMsg($('#err-name'), '');
+    }
+  });
+  fPhoto.addEventListener('change', () => { fPhoto.setAttribute('aria-invalid', 'false'); setMsg($('#err-photo'), ''); });
+
+  const useLoc = $('#use-loc'), useLocLabel = $('#use-loc-label');
+  useLoc.addEventListener('click', () => {
+    if (!('geolocation' in navigator)) { setMsg(coordsMsg, 'geoUnsupported', 'err'); return; }
+    useLoc.disabled = true;
+    setKey(useLocLabel, 'locating');
+    navigator.geolocation.getCurrentPosition((pos) => {
+      useLoc.disabled = false;
+      setKey(useLocLabel, 'useLoc');
+      fLat.value = pos.coords.latitude.toFixed(5);
+      fLng.value = pos.coords.longitude.toFixed(5);
+      const c = readCoords();
+      markCoords(c.inside ? null : 'errOutside');
+      setMsg(coordsMsg, c.inside ? 'inside' : 'geoOutside', c.inside ? 'ok' : 'err');
+    }, (err) => {
+      useLoc.disabled = false;
+      setKey(useLocLabel, 'useLoc');
+      setMsg(coordsMsg, err.code === 1 ? 'geoDenied' : 'geoFail', 'err');
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  });
+
+  function validate() {
+    const name = fName.value.trim();
+    const nameErr = name.length >= 2 ? null : 'errName';
+    fName.setAttribute('aria-invalid', String(Boolean(nameErr)));
+    setMsg($('#err-name'), nameErr);
+
+    const c = readCoords();
+    const cErr = coordsError(c);
+    markCoords(cErr);
+    setMsg(coordsMsg, cErr || 'inside', cErr ? 'err' : 'ok');
+
+    const file = fPhoto.files[0] || null;
+    const pErr = !file ? null : !PHOTO_TYPES[file.type] ? 'errPhotoType' : file.size > MAX_PHOTO ? 'errPhotoSize' : null;
+    fPhoto.setAttribute('aria-invalid', String(Boolean(pErr)));
+    setMsg($('#err-photo'), pErr);
+
+    const firstBad = nameErr ? fName : cErr ? (Number.isFinite(c.lat) && !Number.isFinite(c.lng) ? fLng : fLat) : pErr ? fPhoto : null;
+    return {
+      firstBad, file,
+      data: { name, category_id: fCat.value || null, description: fDesc.value.trim() || null, lat: c.lat, lng: c.lng, lang },
+    };
+  }
+
+  function authHeaders(extra = {}) {
+    const h = { apikey: SUPABASE_ANON_KEY, ...extra };
+    if (SUPABASE_ANON_KEY.startsWith('eyJ')) h.Authorization = `Bearer ${SUPABASE_ANON_KEY}`; // стар anon JWT
+    return h;
+  }
+  function uuid() {
+    if (crypto.randomUUID) return crypto.randomUUID();
+    const b = crypto.getRandomValues(new Uint8Array(16));
+    b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+    const h = [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+    return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+  }
+
+  async function sendSuggestion(data, file) {
+    let photo_path = null;
+    if (file) {
+      const name = `${uuid()}.${PHOTO_TYPES[file.type]}`;
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${PHOTO_BUCKET}/${name}`, {
+        method: 'POST', headers: authHeaders({ 'Content-Type': file.type, 'x-upsert': 'false' }), body: file,
+      });
+      if (!up.ok) throw new Error(`photo upload ${up.status}`);
+      photo_path = name;
+    }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }),
+      body: JSON.stringify({ ...data, photo_path }),
+    });
+    if (!res.ok) throw new Error(`insert ${res.status}`);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if ($('#f-website').value) { form.reset(); setMsg(formStatus, 'ok', 'ok'); return; } // бот
+    const v = validate();
+    if (v.firstBad) { setMsg(formStatus, 'errFix', 'err'); v.firstBad.focus(); return; }
+    if (!HAS_BACKEND) { setMsg(formStatus, 'demo', 'info'); return; }
+
+    const btn = $('#f-submit');
+    btn.disabled = true;
+    setKey($('#f-submit-label'), 'sending');
+    setMsg(formStatus, '');
+    try {
+      await sendSuggestion(v.data, v.file);
+      form.reset();
+      renderCatOptions();
+      setMsg(coordsMsg, '');
+      markCoords(null);
+      setMsg(formStatus, 'ok', 'ok');
+    } catch (err) {
+      console.error(err);
+      setMsg(formStatus, 'fail', 'err');
+    } finally {
+      btn.disabled = false;
+      setKey($('#f-submit-label'), 'send');
+    }
+  });
+
+  function openSuggest(prefill) {
+    if (suggest.open) return;
+    suggestOpener = document.activeElement;
+    setMsg(formStatus, '');
+    if (prefill) {
+      fLat.value = prefill.lat.toFixed(5);
+      fLng.value = prefill.lng.toFixed(5);
+      checkCoordsLive();
+    }
+    resetSheet(suggest);
+    suggest.showModal();
+    $('.sheet-scroll', suggest).scrollTop = 0;
+    fName.focus();
+  }
+  suggest.addEventListener('close', () => {
+    if (suggestOpener && document.contains(suggestOpener)) suggestOpener.focus({ preventScroll: true });
+    suggestOpener = null;
+  });
+  $('#suggest-btn').addEventListener('click', () => openSuggest());
+
+  // ================= Общи действия =================
+  document.addEventListener('click', (e) => {
+    const open = e.target.closest('[data-open]');
+    if (open) { openDetail(open.dataset.open); return; }
+    const act = e.target.closest('[data-action]');
+    if (!act) return;
+    const a = act.dataset.action;
+    if (a === 'close') { const d = act.closest('dialog'); if (d) closeDialog(d); }
+    else if (a === 'clear') { clearFilters(); $('#q2').focus(); }
+    else if (a === 'show-on-map') showOnMap(act.dataset.id);
+    else if (a === 'share') sharePlace(act.dataset.id, act);
+    else if (a === 'suggest') openSuggest();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('map-open') && !detail.open && !suggest.open) closeMobileMap(true);
+  });
+
+  // ================= Език =================
+  function applyI18n() {
+    root.lang = lang;
+    root.classList.remove('i18n-wait');
+    pluralRules = new Intl.PluralRules(LOCALES[lang]);
+    numFmt = new Intl.NumberFormat(LOCALES[lang]);
+    kmFmt = makeKmFmt();
+    document.title = t('docTitle');
+    const md = $('meta[name="description"]');
+    if (md) md.setAttribute('content', t('metaDesc'));
+    $$('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    $$('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+    $$('[data-i18n-label]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
+    $$('[data-msg-key]').forEach((el) => { if (el.dataset.msgKey) el.textContent = t(el.dataset.msgKey); });
+    $('#lang-cur').textContent = LANG_NAMES[lang];
+    for (const b of $$('[data-lang]')) b.setAttribute('aria-checked', String(b.dataset.lang === lang));
+    updateThemeUi();
+    const zc = zoomCtl.getContainer();
+    for (const [sel, key] of [['.leaflet-control-zoom-in', 'zoomIn'], ['.leaflet-control-zoom-out', 'zoomOut']]) {
+      const a = $(sel, zc);
+      if (a) { a.title = t(key); a.setAttribute('aria-label', t(key)); }
+    }
+    const cl = centerMarker.getElement() && centerMarker.getElement().querySelector('.cm-label');
+    if (cl) cl.textContent = t('centerShort');
+    map.closePopup();
+    renderCatOptions();
+    render();
+    renderAuthors();
+    if (detail.open && state.activeId) {
+      const p = places.find((x) => x.id === state.activeId);
+      if (p) renderDetail(p);
+    }
+  }
+
+  // ================= Данни от Supabase =================
+  async function loadRemotePlaces() {
+    if (!HAS_BACKEND) return;
+    try {
+      const url = `${SUPABASE_URL}/rest/v1/places?select=*,author:authors(name,channel_url)&status=eq.approved&order=name_bg`;
+      const r = await fetch(url, { headers: authHeaders() });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const rows = await r.json();
+      if (!Array.isArray(rows)) throw new Error('unexpected response');
+      // Базата е източникът на истина: скрито в админа = скрито и тук.
+      places = rows
+        .filter((p) => p && p.id && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+        .map(({ author, ...p }) => withDist({
+          ...p,
+          drone_author: author?.name || null,
+          drone_author_url: author?.channel_url || null,
+        }));
+      buildMarkers();
+      render();
+      if (detail.open && state.activeId) {
+        const p = places.find((x) => x.id === state.activeId);
+        if (p) renderDetail(p);
+      } else {
+        openFromHash();
+      }
+    } catch (err) {
+      console.warn('Supabase недостъпен – използват се вградените данни.', err);
+    }
+  }
+
+  // ================= Автори на дрон кадрите =================
+  let authors = [];
+  function renderAuthors() {
+    const el = $('#authors-line');
+    if (!el) return;
+    if (!authors.length) { el.hidden = true; return; }
+    const links = authors.map((a) => {
+      const u = safeUrl(a.channel_url);
+      return u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(a.name)}</a>` : esc(a.name);
+    }).join(', ');
+    el.innerHTML = `${esc(t('droneBy'))} ${links}`;
+    el.hidden = false;
+  }
+  async function loadAuthors() {
+    if (!HAS_BACKEND) return;
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/authors?select=name,channel_url&order=name`, { headers: authHeaders() });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const rows = await r.json();
+      authors = Array.isArray(rows) ? rows.filter((a) => a && a.name) : [];
+      renderAuthors();
+    } catch (err) {
+      console.warn('Авторите не се заредиха.', err);
+    }
+  }
+
+  // ================= Старт =================
+  $('#year').textContent = new Date().getFullYear();
+  setLayer(layerChoice);
+  applyTheme();
+  fitAll(false);
+  buildChips();
+  buildMarkers();
+  applyI18n();
+  openFromHash();
+  loadRemotePlaces();
+  loadAuthors();
+})();
+</script>
+</body>
+</html>
