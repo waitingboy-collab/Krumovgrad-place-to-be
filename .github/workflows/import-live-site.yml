@@ -1,0 +1,40 @@
+# Еднократно: изтегля текущия сайт от Vercel в src/, проверява, че е точно
+# същият като качения (SHA-1 = идентификаторите на файловете във Vercel),
+# записва го като commit и изтрива този workflow.
+name: Import live site
+on:
+  push:
+    paths: ['.github/workflows/import-live-site.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download live files
+        run: |
+          set -euo pipefail
+          B=https://krumovgrad-place-to-be.vercel.app
+          curl -fsSL "$B/" -o src/index.html
+          curl -fsSL "$B/places" -o src/places.html
+          curl -fsSL "$B/admin" -o src/admin.html
+          wc -c src/*.html
+      - name: Verify against the Vercel deployment
+        run: |
+          set -euo pipefail
+          echo "3a08e655c25b1359c28abe8a88c772518e8ff9c1  src/index.html"  >  sums.txt
+          echo "3a08e655c25b1359c28abe8a88c772518e8ff9c1  src/places.html" >> sums.txt
+          echo "e5b6109f9d3227fd73b05bda5bf4c097852f820e  src/admin.html"  >> sums.txt
+          sha1sum -c sums.txt
+          rm sums.txt
+      - name: Commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q .github/workflows/import-live-site.yml
+          git add src
+          git commit -m "Текущият сайт, изтеглен от krumovgrad-place-to-be.vercel.app"
+          git push
